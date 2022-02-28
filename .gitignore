@@ -1,0 +1,4 @@
+*.out
+*.o
+./Code/parser
+./Code/scanner
