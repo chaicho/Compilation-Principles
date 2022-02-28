@@ -17,13 +17,13 @@ YFC = $(shell find ./ -name "*.y" | sed s/[^/]*\\.y/syntax.tab.c/)
 LFO = $(LFC:.c=.o)
 YFO = $(YFC:.c=.o)
 
-parser: syntax $(filter-out $(LFO),$(OBJS))
+parser:  syntax $(filter-out $(LFO),$(OBJS))
 	$(CC)  -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly
 
 syntax: lexical syntax-c
 	$(CC) -c $(YFC) -o $(YFO)
 
-lexical: $(LFILE)
+lexical: clean $(LFILE)
 	$(FLEX) -o $(LFC) $(LFILE)
 
 syntax-c: $(YFILE)
@@ -39,6 +39,8 @@ testflex:
 	flex ./lexical.l 
 	gcc main.c lex.yy.c -lfl -o scanner 	
 	./scanner
+testparser: parser
+	./parser
 clean:
 	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output
 	rm -f $(OBJS) $(OBJS:.o=.d)

@@ -13,7 +13,7 @@
 #define panic(format, ...) \
   do { \
     Log("\33[1;31msystem panic: " format, ## __VA_ARGS__); \
-    halt(1); \
+    exit(1); \
   } while (0)
 
 #ifdef assert

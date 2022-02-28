@@ -51,10 +51,30 @@ extern int yydebug;
   {
     INT = 258,
     FLOAT = 259,
-    ADD = 260,
-    SUB = 261,
+    PLUS = 260,
+    MINUS = 261,
     MUL = 262,
-    DIV = 263
+    DIV = 263,
+    SEMI = 264,
+    COMMA = 265,
+    ASSIGNOP = 266,
+    RELOP = 267,
+    AND = 268,
+    OR = 269,
+    DOT = 270,
+    NOT = 271,
+    TYPE = 272,
+    ID = 273,
+    LP = 274,
+    RP = 275,
+    LB = 276,
+    RB = 277,
+    LC = 278,
+    RC = 279,
+    STRUCT = 280,
+    IF = 281,
+    ELSE = 282,
+    WHILE = 283
   };
 #endif
 
@@ -62,13 +82,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 7 "./syntax.y"
+#line 11 "./syntax.y"
  
-   int type_int; 
-   float type_float; 
-   double type_double; 
+   int int_val; 
+   float float_val; 
+   int relop_val ;
+   char *str_val; 
 
-#line 72 "./syntax.tab.h"
+#line 93 "./syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -76,9 +97,23 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_SYNTAX_TAB_H_INCLUDED  */

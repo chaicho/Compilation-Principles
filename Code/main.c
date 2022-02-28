@@ -1,6 +1,8 @@
 #include <stdio.h>
 extern FILE * yyin;
 #define FLEXDEBUG
+// #define BISONDEBUG
+
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
     if(argc > 1){
@@ -12,7 +14,11 @@ int main(int argc ,char ** argv){
     while(yylex() != 0 );
     return 0;
 }
-#elif
+#elif defined(BISONDEBUG) 
+int main(){
+    yyparse();
+}
+#else
 int main(int argc, char** argv) 
 { 
     if (argc <= 1) return 1; 
