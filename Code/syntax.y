@@ -4,6 +4,7 @@
   extern int yylex(void); 
    // 在此声明，消除yacc生成代码时的告警
   extern int yyparse(void); 
+  int yydebug=1;
 %} 
 %locations
 /* declared types */ 
@@ -20,10 +21,10 @@
 %token <float_val> FLOAT "float"
 %token PLUS "+"
 %token MINUS "-"
-%token MUL "*"
+%token STAR "*"
 %token DIV "/"
 %token SEMI  ";"
-%token COMMA ":"
+%token COMMA ","
 %token ASSIGNOP "="
 %token RELOP
 %token AND  "&&"
@@ -37,27 +38,133 @@
 %token RB "]"
 %token LC "{"
 %token RC "}"
-%token STRUCT IF ELSE WHILE
+%token STRUCT IF ELSE WHILE RETURN
 
 
 /* declared non-terminals */ 
-%type <float_val> Exp Factor Term 
+// %type <float_val> Exp Factor Term 
 
+/* Priority Definitions*/
+%right ASSIGNOP
+%left '+' '-'
+%left '*' '/'
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 %% 
-Calc :  /* empty */ 
-   | Exp  { printf("=%lf\n",$1); } 
+/* High-level Definitions */
+Program : ExtDefList
+   ;
+
+ExtDefList :  /* empty */
+   | ExtDef ExtDefList
+   ;
+
+ExtDef :  Specifier ExtDecList ";"
+   | Specifier  ";" {printf("Specifier");}
+   | Specifier FunDec CompSt
+   ;
+
+ExtDecList : VarDec
+   | VarDec ":" ExtDecList
+   ;
+
+/* Specifiers */
+Specifier  : TYPE 
+   | StructSpecifier
+   ;
+
+StructSpecifier : STRUCT OptTag LC DefList RC
+   | STRUCT Tag
+   ;
+
+OptTag : /* empty */
+   | ID
+   ;
+
+Tag  :  ID
    ; 
-Exp : Factor 
-   | Exp "+" Factor  { $$ = $1 + $3; } 
-   | Exp "-" Factor  { $$ = $1 - $3; } 
-   ; 
-Factor : Term 
-   | Factor "*" Term  { $$ = $1 * $3; } 
-   | Factor "/" Term  { $$ = $1 / $3; } 
-   ; 
-Term : "int" { $$ = $1; } 
-   |  "float"  { $$ = $1; } 
-   ; 
+
+
+/* Declarators */
+
+VarDec : ID
+   | VarDec "[" INT "]"
+   ;
+
+FunDec : ID "(" VarList ")"
+   | ID "(" ")"
+   ;
+
+VarList : ParamDec "," VarList
+   |  ParamDec 
+   ;
+
+
+ParamDec : Specifier VarDec
+   ;
+
+
+
+/* statements */
+CompSt : LC DefList StmtList RC
+   ;
+
+StmtList : Stmt StmtList
+   | /*  empty */
+   ;
+
+Stmt : Exp SEMI
+   | CompSt
+   | RETURN Exp SEMI
+   | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE
+   | IF LP Exp RP Stmt ELSE Stmt
+   | WHILE LP Exp RP Stmt
+   ;
+
+
+
+/* Local Definitions */
+DefList : Def DefList
+   | /* empty */
+   ;
+
+Def : Specifier DecList SEMI
+   ;
+
+DecList : Dec
+   | Dec COMMA DecList
+   ;
+
+Dec : VarDec
+   | VarDec ASSIGNOP Exp  
+   ;
+
+/* 7.1.7 Expressions */
+
+Exp : Exp "=" Exp
+   | Exp "&&" Exp
+   | Exp "||" Exp
+   | Exp RELOP Exp
+   | Exp "+" Exp
+   | Exp "-" Exp
+   | Exp "*" Exp
+   | Exp "/" Exp
+   | "(" Exp ")"
+   | "-" Exp
+   | "!" Exp
+   | ID "(" Args ")"
+   | ID "(" ")"
+   | Exp "[" Exp "]"
+   | Exp "." ID
+   | ID
+   | INT
+   | FLOAT
+   ;
+
+Args : Exp COMMA Args
+   | Exp
+   ;
 
 %% 
 #include "lex.yy.c"

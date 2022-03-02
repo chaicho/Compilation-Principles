@@ -75,7 +75,7 @@
   extern int yyparse(void); 
   int yydebug=1;
 
-#line 79 "syntax.tab.c"
+#line 79 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -150,6 +150,35 @@ extern int yydebug;
     LOWER_THAN_ELSE = 285
   };
 #endif
+/* Tokens.  */
+#define INT 258
+#define FLOAT 259
+#define PLUS 260
+#define MINUS 261
+#define STAR 262
+#define DIV 263
+#define SEMI 264
+#define COMMA 265
+#define ASSIGNOP 266
+#define RELOP 267
+#define AND 268
+#define OR 269
+#define DOT 270
+#define NOT 271
+#define TYPE 272
+#define ID 273
+#define LP 274
+#define RP 275
+#define LB 276
+#define RB 277
+#define LC 278
+#define RC 279
+#define STRUCT 280
+#define IF 281
+#define ELSE 282
+#define WHILE 283
+#define RETURN 284
+#define LOWER_THAN_ELSE 285
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -162,7 +191,7 @@ union YYSTYPE
    int relop_val ;
    char *str_val; 
 
-#line 166 "syntax.tab.c"
+#line 195 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -1538,11 +1567,11 @@ yyreduce:
   case 6:
 #line 64 "syntax.y"
                     {printf("Specifier");}
-#line 1542 "syntax.tab.c"
+#line 1571 "y.tab.c"
     break;
 
 
-#line 1546 "syntax.tab.c"
+#line 1575 "y.tab.c"
 
       default: break;
     }

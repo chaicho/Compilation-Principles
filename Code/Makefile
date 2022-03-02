@@ -17,7 +17,7 @@ YFC = $(shell find ./ -name "*.y" | sed s/[^/]*\\.y/syntax.tab.c/)
 LFO = $(LFC:.c=.o)
 YFO = $(YFC:.c=.o)
 
-parser:  syntax $(filter-out $(LFO),$(OBJS))
+parser: clean syntax $(filter-out $(LFO),$(OBJS))
 	$(CC)  -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly
 
 syntax: lexical syntax-c
@@ -33,7 +33,7 @@ syntax-c: $(YFILE)
 
 # 定义的一些伪目标
 .PHONY: clean test testflex
-test:
+test: parser
 	./parser ../Test/test1.cmm
 testflex:
 	flex ./lexical.l 

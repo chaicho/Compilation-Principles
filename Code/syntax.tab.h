@@ -53,7 +53,7 @@ extern int yydebug;
     FLOAT = 259,
     PLUS = 260,
     MINUS = 261,
-    MUL = 262,
+    STAR = 262,
     DIV = 263,
     SEMI = 264,
     COMMA = 265,
@@ -74,7 +74,9 @@ extern int yydebug;
     STRUCT = 280,
     IF = 281,
     ELSE = 282,
-    WHILE = 283
+    WHILE = 283,
+    RETURN = 284,
+    LOWER_THAN_ELSE = 285
   };
 #endif
 
@@ -82,14 +84,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 11 "./syntax.y"
+#line 12 "./syntax.y"
  
    int int_val; 
    float float_val; 
    int relop_val ;
    char *str_val; 
 
-#line 93 "./syntax.tab.h"
+#line 95 "./syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

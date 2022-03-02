@@ -1,7 +1,7 @@
 #include <stdio.h>
 extern FILE * yyin;
-#define FLEXDEBUG
-// #define BISONDEBUG
+// #define FLEXDEBUG
+#define BISONDEBUG
 
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
@@ -16,6 +16,7 @@ int main(int argc ,char ** argv){
 }
 #elif defined(BISONDEBUG) 
 int main(){
+    // yydebug = 1;
     yyparse();
 }
 #else
