@@ -46,8 +46,13 @@
 
 /* Priority Definitions*/
 %right ASSIGNOP
-%left '+' '-'
-%left '*' '/'
+%left  OR
+%left  AND
+%left  RELOP
+%left  PLUS MINUS
+%left  STAR DIV
+%right NOT
+%left  DOT LB RB LP RP
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -66,7 +71,7 @@ ExtDef :  Specifier ExtDecList ";"
    ;
 
 ExtDecList : VarDec
-   | VarDec ":" ExtDecList
+   | VarDec "," ExtDecList
    ;
 
 /* Specifiers */
