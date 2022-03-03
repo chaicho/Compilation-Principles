@@ -1,6 +1,6 @@
 #include <stdio.h>
 extern FILE * yyin;
-// #define FLEXDEBUG
+// #define FLEXDEBUGm
 #define BISONDEBUG
 
 #ifdef FLEXDEBUG
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     if (!f) 
     { 
         perror(argv[1]); 
-        return 1; 
+        // return 1; 
     } 
     yyrestart(f); 
     yyparse(); 

@@ -4,7 +4,9 @@
   extern int yylex(void); 
    // 在此声明，消除yacc生成代码时的告警
   extern int yyparse(void); 
-  int yydebug=1;
+  int errlineno = -1;
+//   #define YYDEBUG 1
+//   int yydebug=1;
 %} 
 %locations
 /* declared types */ 
@@ -40,7 +42,6 @@
 %token RC "}"
 %token STRUCT IF ELSE WHILE RETURN
 
-
 /* declared non-terminals */ 
 // %type <float_val> Exp Factor Term 
 
@@ -67,7 +68,9 @@ ExtDefList :  /* empty */
 
 ExtDef :  Specifier ExtDecList ";"
    | Specifier  ";" {printf("Specifier");}
+   | error ";"
    | Specifier FunDec CompSt
+   | error FunDec CompSt
    ;
 
 ExtDecList : VarDec
@@ -79,7 +82,8 @@ Specifier  : TYPE
    | StructSpecifier
    ;
 
-StructSpecifier : STRUCT OptTag LC DefList RC
+StructSpecifier : STRUCT OptTag "{" DefList "}"
+   | STRUCT OptTag "{"  error "}"
    | STRUCT Tag
    ;
 
@@ -98,7 +102,9 @@ VarDec : ID
    ;
 
 FunDec : ID "(" VarList ")"
+   | ID "(" error ")"
    | ID "(" ")"
+   | error ")"
    ;
 
 VarList : ParamDec "," VarList
@@ -112,7 +118,8 @@ ParamDec : Specifier VarDec
 
 
 /* statements */
-CompSt : LC DefList StmtList RC
+CompSt : "{" DefList StmtList "}"
+   | error "}"
    ;
 
 StmtList : Stmt StmtList
@@ -122,9 +129,14 @@ StmtList : Stmt StmtList
 Stmt : Exp SEMI
    | CompSt
    | RETURN Exp SEMI
-   | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE
-   | IF LP Exp RP Stmt ELSE Stmt
-   | WHILE LP Exp RP Stmt
+   | IF "(" Exp ")" Stmt %prec LOWER_THAN_ELSE
+   | IF "(" Exp ")" Stmt ELSE Stmt
+   | WHILE "(" Exp ")" Stmt
+   | error SEMI
+   | IF "(" error ")" Stmt %prec LOWER_THAN_ELSE
+   | IF "(" error ")" Stmt ELSE Stmt
+   | IF "(" Exp ")" error ELSE Stmt
+   | WHILE LP error RP Stmt
    ;
 
 
@@ -135,6 +147,7 @@ DefList : Def DefList
    ;
 
 Def : Specifier DecList SEMI
+   | Specifier error SEMI
    ;
 
 DecList : Dec
@@ -165,6 +178,18 @@ Exp : Exp "=" Exp
    | ID
    | INT
    | FLOAT
+   | "(" error ")"
+   | "(" error "]"
+   | "(" error "}"
+   | "(" error ";"
+   | ID "(" error ")"
+   | ID "(" error "]"
+   | ID "(" error "}"
+   | ID "(" error ";"
+   | Exp "[" error "]"
+   | Exp "[" Exp ")"
+   | Exp "[" Exp "}"
+   | Exp "[" Exp ";"
    ;
 
 Args : Exp COMMA Args
@@ -173,6 +198,13 @@ Args : Exp COMMA Args
 
 %% 
 #include "lex.yy.c"
-yyerror(char* msg) { 
-    fprintf(stderr, "error: %s\n", msg); 
+void yyerror(char* msg) { 
+   if(errlineno == yylineno){
+      return;
+   }
+   else{
+      errlineno  = yylineno;
+   }
+  fprintf(stderr, "Error type B at Line %d: %s near '%s'.\n", yylineno, msg, yytext);
 } 
+
