@@ -28,7 +28,7 @@ StNode * st_Insert(StNode * cur, StNode *nxt){
 
 void st_PrintTree(StNode * node,int depth){
         if(node == NULL) return;
-        for(int i = 0 ; i < depth; i++)  printf("\t");
+        for(int i = 0 ; i < depth; i++)  printf("  ");
         printf("%s",node->name);
         if(node->symbol!=-1) {
                 printf(" (%d)",node->line_no);
@@ -37,10 +37,10 @@ void st_PrintTree(StNode * node,int depth){
                 switch (node->token)
                 {
                 case    INT:
-                        printf("%d",node->st_val.int_val);
+                        printf(": %d",node->st_val.int_val);
                         break;
                 case    FLOAT:
-                        printf("%f",node->st_val.float_val);
+                        printf(": %f",node->st_val.float_val);
                         break;
                 case    ID:
                 case    TYPE:
@@ -54,12 +54,11 @@ void st_PrintTree(StNode * node,int depth){
                 assert(0);
         }
         printf("\n");
-        st_PrintTree(node->child,depth + 1);
-        StNode *cur = node->siblings;
-        while (cur)
+        StNode * cur = node->child;
+        while (cur!= NULL)
         {
-                st_PrintTree(cur,depth);
-                cur= cur->siblings;
+                st_PrintTree(cur,depth + 1);
+                cur = cur->siblings;
         }
         return;
 }

@@ -4,7 +4,6 @@
     #include <string.h>
     #include  "debug.h"
     #include "syntax.tab.h"
-    #include "token.h"
     int yycolumn = 1;
 
     enum{
@@ -15,7 +14,19 @@
         yylloc.first_column = yycolumn;                     \
         yylloc.last_column  = yycolumn + yyleng - 1;        \
         yycolumn += yyleng;
-    
+    #define STR(s) #s
+    extern YYLTYPE yylloc;
+    #define RETURNT(TOKEN)\                       
+    do{              \      
+        yylloc.node = st_NodeInit(#TOKEN);\
+        StNode * curnode = yylloc.node;\
+        curnode->line_no = yylloc.first_line; \ 
+        curnode->st_val = yylval;\  
+        curnode->token = TOKEN; \
+        Log("%s %d %d",curnode->name,curnode->line_no, TOKEN);\
+    }                                           \              
+    while (0);                                  \
+    return TOKEN;     
 %}
 
 WS   [\r\n\t ]

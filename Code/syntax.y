@@ -17,13 +17,15 @@ do                                                        \
       (Cur).first_column = YYRHSLOC(Rhs, 1).first_column; \
       (Cur).last_line    = YYRHSLOC(Rhs, N).last_line;    \
       (Cur).last_column  = YYRHSLOC(Rhs, N).last_column;  \
+      \                                                              
       (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
       (Cur).node->symbol =  yyr1[yyn];                   \
       (Cur).node->line_no = (Cur).first_line;           \                
-      for(int i = 1; i <=  N ; ++i) {\
-         YYLTYPE kid = YYRHSLOC(Rhs,i);\
-         st_Insert(Cur.node,kid.node);\
+      (Cur).node->child = YYRHSLOC(Rhs,1).node;\
+      for(int i = 1; i < N ; ++i) {\
+         YYRHSLOC(Rhs,i).node->siblings =  YYRHSLOC(Rhs,i + 1).node;\
       }\
+      YYRHSLOC(Rhs,N).node -> siblings = NULL ;\
     }                                                     \
   else                                                    \
     {                                                     \

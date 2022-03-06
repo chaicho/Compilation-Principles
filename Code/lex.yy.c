@@ -543,9 +543,21 @@ char *yytext;
         yylloc.first_column = yycolumn;                     \
         yylloc.last_column  = yycolumn + yyleng - 1;        \
         yycolumn += yyleng;
-    
-#line 548 "./lex.yy.c"
-#line 549 "./lex.yy.c"
+    #define STR(s) #s
+    extern YYLTYPE yylloc;
+    #define RETURNT(TOKEN)\                       
+    do{              \      
+        yylloc.node = st_NodeInit(#TOKEN);\
+        StNode * curnode = yylloc.node;\
+        curnode->line_no = yylloc.first_line; \ 
+        curnode->st_val = yylval;\  
+        curnode->token = TOKEN; \
+        Log("%s %d %d",curnode->name,curnode->line_no, TOKEN);\
+    }                                           \              
+    while (0);                                  \
+    return TOKEN;     
+#line 560 "./lex.yy.c"
+#line 561 "./lex.yy.c"
 
 #define INITIAL 0
 
@@ -762,9 +774,9 @@ YY_DECL
 		}
 
 	{
-#line 33 "./lexical.l"
+#line 45 "./lexical.l"
 
-#line 768 "./lex.yy.c"
+#line 780 "./lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -839,29 +851,29 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 34 "./lexical.l"
+#line 46 "./lexical.l"
 { Log("INT");  yylval.int_val = atoi(yytext);  RETURNT (INT); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 36 "./lexical.l"
+#line 48 "./lexical.l"
 { assert(0);  yycolumn = 1; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 38 "./lexical.l"
+#line 50 "./lexical.l"
 { }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 40 "./lexical.l"
+#line 52 "./lexical.l"
 { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); RETURNT (FLOAT);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 42 "./lexical.l"
+#line 54 "./lexical.l"
 {
     char c = input();
     while (c != '\n') c = input();
@@ -869,153 +881,153 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 47 "./lexical.l"
+#line 59 "./lexical.l"
 { Log("PLUS"); RETURNT (PLUS); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 49 "./lexical.l"
+#line 61 "./lexical.l"
 { Log("MINUS"); RETURNT (MINUS);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 51 "./lexical.l"
+#line 63 "./lexical.l"
 { Log("MULTIPLY"); RETURNT (STAR);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 53 "./lexical.l"
+#line 65 "./lexical.l"
 { Log("DIVIDE"); RETURNT (DIV);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 55 "./lexical.l"
+#line 67 "./lexical.l"
 { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 56 "./lexical.l"
+#line 68 "./lexical.l"
 { Log("GT") ;installrelop(GT); RETURNT (RELOP);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 57 "./lexical.l"
+#line 69 "./lexical.l"
 { Log("EQ") ;installrelop(EQ); RETURNT (RELOP);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 58 "./lexical.l"
+#line 70 "./lexical.l"
 { Log("NE") ;installrelop(NE); RETURNT (RELOP);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 59 "./lexical.l"
+#line 71 "./lexical.l"
 { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 60 "./lexical.l"
+#line 72 "./lexical.l"
 { Log("GE") ;installrelop(GE); RETURNT (RELOP);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 61 "./lexical.l"
+#line 73 "./lexical.l"
 { Log("LP") ;RETURNT (LP) ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 62 "./lexical.l"
+#line 74 "./lexical.l"
 { Log("RP") ;RETURNT (RP) ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 63 "./lexical.l"
+#line 75 "./lexical.l"
 { Log("LB") ;RETURNT (LB) ;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 64 "./lexical.l"
+#line 76 "./lexical.l"
 { Log("RB") ;RETURNT (RB) ;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 65 "./lexical.l"
+#line 77 "./lexical.l"
 { Log("LC") ;RETURNT (LC) ;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 66 "./lexical.l"
+#line 78 "./lexical.l"
 { Log("RC") ;RETURNT (RC) ;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 67 "./lexical.l"
+#line 79 "./lexical.l"
 { Log(";")  ;RETURNT (SEMI);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 68 "./lexical.l"
+#line 80 "./lexical.l"
 { Log("=")  ;RETURNT (ASSIGNOP); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 69 "./lexical.l"
+#line 81 "./lexical.l"
 { Log("||") ;RETURNT (OR);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 70 "./lexical.l"
+#line 82 "./lexical.l"
 { Log("&&") ;RETURNT (AND);}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 71 "./lexical.l"
+#line 83 "./lexical.l"
 { Log(".") ;RETURNT (DOT);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 72 "./lexical.l"
+#line 84 "./lexical.l"
 { Log("!") ;RETURNT (NOT);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 73 "./lexical.l"
+#line 85 "./lexical.l"
 { Log(",") ;RETURNT (COMMA);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 75 "./lexical.l"
+#line 87 "./lexical.l"
 {RETURNT (IF);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 76 "./lexical.l"
+#line 88 "./lexical.l"
 {RETURNT (ELSE);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 77 "./lexical.l"
+#line 89 "./lexical.l"
 {RETURNT (WHILE);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 78 "./lexical.l"
+#line 90 "./lexical.l"
 {RETURNT (RETURN);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 80 "./lexical.l"
+#line 92 "./lexical.l"
 {Log("TYPE"); yylval.str_val = strdup(yytext); RETURNT (TYPE);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 82 "./lexical.l"
+#line 94 "./lexical.l"
 {Log("ID"); yylval.str_val = strdup(yytext); RETURNT (ID);} 
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 85 "./lexical.l"
+#line 97 "./lexical.l"
 {
     if (yytext[yyleng - 2] == '\\') {
     yyless(yyleng - 1);
@@ -1029,7 +1041,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 96 "./lexical.l"
+#line 108 "./lexical.l"
 {
  printf("Error type A at Line %d: Mysterious characters \'%s\'\n",
  yylineno, yytext);
@@ -1037,10 +1049,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 100 "./lexical.l"
+#line 112 "./lexical.l"
 ECHO;
 	YY_BREAK
-#line 1044 "./lex.yy.c"
+#line 1056 "./lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2057,7 +2069,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 100 "./lexical.l"
+#line 112 "./lexical.l"
 
 inline void   installID(){
     yylval.str_val = strdup(yytext);
