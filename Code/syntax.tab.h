@@ -43,6 +43,21 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 41 "./syntax.y"
+
+  #define YYLTYPE YYLTYPE
+  typedef struct YYLTYPE
+  {
+    int first_line;
+    int first_column;
+    int last_line;
+    int last_column;
+    char *filename;
+    struct StNode * node;
+  } YYLTYPE;
+
+#line 61 "./syntax.tab.h"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -84,14 +99,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "./syntax.y"
+#line 54 "./syntax.y"
  
    int int_val; 
    float float_val; 
    int relop_val ;
    char *str_val; 
 
-#line 95 "./syntax.tab.h"
+#line 110 "./syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

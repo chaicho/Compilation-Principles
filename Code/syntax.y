@@ -1,15 +1,55 @@
 %{
    
   #include <stdio.h> 
+  #include "ast.h"
+  #include "debug.h"
   extern int yylex(void); 
    // 在此声明，消除yacc生成代码时的告警
   extern int yyparse(void); 
   int errlineno = -1;
-//   #define YYDEBUG 1
+  StNode * root;
 //   int yydebug=1;
+# define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
+do                                                        \
+  if (N)                                                  \
+    {                                                       \
+      (Cur).first_line   = YYRHSLOC(Rhs, 1).first_line;   \
+      (Cur).first_column = YYRHSLOC(Rhs, 1).first_column; \
+      (Cur).last_line    = YYRHSLOC(Rhs, N).last_line;    \
+      (Cur).last_column  = YYRHSLOC(Rhs, N).last_column;  \
+      (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
+      (Cur).node->symbol =  yyr1[yyn];                   \
+      (Cur).node->line_no = (Cur).first_line;           \                
+      for(int i = 1; i <=  N ; ++i) {\
+         YYLTYPE kid = YYRHSLOC(Rhs,i);\
+         st_Insert(Cur.node,kid.node);\
+      }\
+    }                                                     \
+  else                                                    \
+    {                                                     \
+      (Cur).first_line   = (Cur).last_line   =            \
+        YYRHSLOC(Rhs, 0).last_line;                       \
+      (Cur).first_column = (Cur).last_column =            \
+        YYRHSLOC(Rhs, 0).last_column;                     \
+    }                                                     \
+while (0)
 %} 
 %locations
+%token-table
 /* declared types */ 
+
+%code requires{
+  #define YYLTYPE YYLTYPE
+  typedef struct YYLTYPE
+  {
+    int first_line;
+    int first_column;
+    int last_line;
+    int last_column;
+    char *filename;
+    struct StNode * node;
+  } YYLTYPE;
+}
 
 %union { 
    int int_val; 
@@ -40,7 +80,11 @@
 %token RB "]"
 %token LC "{"
 %token RC "}"
-%token STRUCT IF ELSE WHILE RETURN
+%token STRUCT 
+%token IF 
+%token ELSE
+%token WHILE 
+%token RETURN
 
 /* declared non-terminals */ 
 // %type <float_val> Exp Factor Term 
@@ -59,7 +103,7 @@
 %nonassoc ELSE
 %% 
 /* High-level Definitions */
-Program : ExtDefList
+Program : ExtDefList {root = @$.node;}
    ;
 
 ExtDefList :  /* empty */
@@ -67,8 +111,8 @@ ExtDefList :  /* empty */
    ;
 
 ExtDef :  Specifier ExtDecList ";"
-   | Specifier  ";" {printf("Specifier");}
-   | error ";"
+   | Specifier  ";" {printf("Specifier, %d\n" , @1.first_line);}
+   | error ";"{printf("gg\n");}
    | Specifier FunDec CompSt
    | error FunDec CompSt
    ;

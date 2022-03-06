@@ -4,6 +4,7 @@
     #include <string.h>
     #include  "debug.h"
     #include "syntax.tab.h"
+    #include "token.h"
     int yycolumn = 1;
 
     enum{
@@ -30,49 +31,55 @@ ch_    [a-zA-Z0-9]|_
 ID     ([a-zA-Z_]{ch_}*)
 TYPE   int|float  
 %%
-{INT}   { Log("INT");  yylval.int_val = atoi(yytext);  return INT; }
+{INT}   { Log("INT");  yylval.int_val = atoi(yytext);  RETURNT (INT); }
 
-"\n"    {   yycolumn = 1; }
+"/\n"    { assert(0);  yycolumn = 1; }
 
 {WS}    { }
 
-{FLOAT} { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); return FLOAT;}
+{FLOAT} { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); RETURNT (FLOAT);}
 
 "//" {
     char c = input();
     while (c != '\n') c = input();
 }
 
-"+"     { Log("PLUS"); return (PLUS); }
+"+"     { Log("PLUS"); RETURNT (PLUS); }
 
-"-"     { Log("MINUS"); return (MINUS);}
+"-"     { Log("MINUS"); RETURNT (MINUS);}
 
-"*"     { Log("MULTIPLY"); return (STAR);}
+"*"     { Log("MULTIPLY"); RETURNT (STAR);}
 
-"/"     { Log("DIVIDE"); return (DIV);}
+"/"     { Log("DIVIDE"); RETURNT (DIV);}
 
-"<"     { Log("LE") ;installrelop(LE); return RELOP;}
-">"     { Log("GT") ;installrelop(GT); return RELOP;}
-"=="    { Log("EQ") ;installrelop(EQ); return RELOP;}
-"!="    { Log("NE") ;installrelop(NE); return RELOP;}
-"<="    { Log("LE") ;installrelop(LE); return RELOP;}
-">="    { Log("GE") ;installrelop(GE); return RELOP;}
-"("     { Log("LP") ;return (LP) ;}
-")"     { Log("RP") ;return (RP) ;}
-"["     { Log("LB") ;return (LB) ;}
-"]"     { Log("RB") ;return (RB) ;}
-"{"     { Log("LC") ;return (LC) ;}
-"}"     { Log("RC") ;return (RC) ;}
-";"     { Log(";")  ;return SEMI;}
-"="     { Log("=")  ;return ASSIGNOP; }
-"||"    { Log("||") ;return OR;}
-"&&"    { Log("&&") ;return AND;}
-"."     { Log(".") ;return DOT;}
-"!"     { Log("!") ;return NOT;}
-","     { Log(",") ;return COMMA;;}
-{TYPE}  {Log("TYPE");return (TYPE);}
+"<"     { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
+">"     { Log("GT") ;installrelop(GT); RETURNT (RELOP);}
+"=="    { Log("EQ") ;installrelop(EQ); RETURNT (RELOP);}
+"!="    { Log("NE") ;installrelop(NE); RETURNT (RELOP);}
+"<="    { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
+">="    { Log("GE") ;installrelop(GE); RETURNT (RELOP);}
+"("     { Log("LP") ;RETURNT (LP) ;}
+")"     { Log("RP") ;RETURNT (RP) ;}
+"["     { Log("LB") ;RETURNT (LB) ;}
+"]"     { Log("RB") ;RETURNT (RB) ;}
+"{"     { Log("LC") ;RETURNT (LC) ;}
+"}"     { Log("RC") ;RETURNT (RC) ;}
+";"     { Log(";")  ;RETURNT (SEMI);}
+"="     { Log("=")  ;RETURNT (ASSIGNOP); }
+"||"    { Log("||") ;RETURNT (OR);}
+"&&"    { Log("&&") ;RETURNT (AND);}
+"."     { Log(".") ;RETURNT (DOT);}
+"!"     { Log("!") ;RETURNT (NOT);}
+","     { Log(",") ;RETURNT (COMMA);}
 
-{ID}    {Log("ID"); return ID;} 
+"if"     {RETURNT (IF);}
+"else"   {RETURNT (ELSE);}
+"while"  {RETURNT (WHILE);}
+"return" {RETURNT (RETURN);}
+
+{TYPE}  {Log("TYPE"); yylval.str_val = strdup(yytext); RETURNT (TYPE);}
+
+{ID}    {Log("ID"); yylval.str_val = strdup(yytext); RETURNT (ID);} 
 
 
 \"[^\"]*\" {
@@ -84,7 +91,8 @@ TYPE   int|float
         Log("%s",yytext);
         Log("endofstring");
     }
- }
+}
+
 . {
  printf("Error type A at Line %d: Mysterious characters \'%s\'\n",
  yylineno, yytext);

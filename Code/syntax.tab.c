@@ -66,18 +66,44 @@
 
 
 /* First part of user prologue.  */
-#line 1 "syntax.y"
+#line 1 "./syntax.y"
 
    
   #include <stdio.h> 
+  #include "ast.h"
+  #include "debug.h"
   extern int yylex(void); 
    // 在此声明，消除yacc生成代码时的告警
   extern int yyparse(void); 
   int errlineno = -1;
-//   #define YYDEBUG 1
+  StNode * root;
 //   int yydebug=1;
+# define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
+do                                                        \
+  if (N)                                                  \
+    {                                                       \
+      (Cur).first_line   = YYRHSLOC(Rhs, 1).first_line;   \
+      (Cur).first_column = YYRHSLOC(Rhs, 1).first_column; \
+      (Cur).last_line    = YYRHSLOC(Rhs, N).last_line;    \
+      (Cur).last_column  = YYRHSLOC(Rhs, N).last_column;  \
+      (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
+      (Cur).node->symbol =  yyr1[yyn];                   \
+      (Cur).node->line_no = (Cur).first_line;           \                
+      for(int i = 1; i <=  N ; ++i) {\
+         YYLTYPE kid = YYRHSLOC(Rhs,i);\
+         st_Insert(Cur.node,kid.node);\
+      }\
+    }                                                     \
+  else                                                    \
+    {                                                     \
+      (Cur).first_line   = (Cur).last_line   =            \
+        YYRHSLOC(Rhs, 0).last_line;                       \
+      (Cur).first_column = (Cur).last_column =            \
+        YYRHSLOC(Rhs, 0).last_column;                     \
+    }                                                     \
+while (0)
 
-#line 81 "syntax.tab.c"
+#line 107 "./syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -108,7 +134,10 @@
 # define YYERROR_VERBOSE 0
 #endif
 
-
+/* Use api.header.include to #include this header
+   instead of duplicating it here.  */
+#ifndef YY_YY_SYNTAX_TAB_H_INCLUDED
+# define YY_YY_SYNTAX_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -116,6 +145,21 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 41 "./syntax.y"
+
+  #define YYLTYPE YYLTYPE
+  typedef struct YYLTYPE
+  {
+    int first_line;
+    int first_column;
+    int last_line;
+    int last_column;
+    char *filename;
+    struct StNode * node;
+  } YYLTYPE;
+
+#line 163 "./syntax.tab.c"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -157,14 +201,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "syntax.y"
+#line 54 "./syntax.y"
  
    int int_val; 
    float float_val; 
    int relop_val ;
    char *str_val; 
 
-#line 168 "syntax.tab.c"
+#line 212 "./syntax.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -191,7 +235,7 @@ extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 int yyparse (void);
 
-
+#endif /* !YY_YY_SYNTAX_TAB_H_INCLUDED  */
 
 
 
@@ -559,19 +603,19 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    62,    62,    65,    66,    69,    70,    71,    72,    73,
-      76,    77,    81,    82,    85,    86,    87,    90,    91,    94,
-     100,   101,   104,   105,   106,   107,   110,   111,   115,   121,
-     122,   125,   126,   129,   130,   131,   132,   133,   134,   135,
-     136,   137,   138,   139,   145,   146,   149,   150,   153,   154,
-     157,   158,   163,   164,   165,   166,   167,   168,   169,   170,
-     171,   172,   173,   174,   175,   176,   177,   178,   179,   180,
-     181,   182,   183,   184,   185,   186,   187,   188,   189,   190,
-     191,   192,   195,   196
+       0,   106,   106,   109,   110,   113,   114,   115,   116,   117,
+     120,   121,   125,   126,   129,   130,   131,   134,   135,   138,
+     144,   145,   148,   149,   150,   151,   154,   155,   159,   165,
+     166,   169,   170,   173,   174,   175,   176,   177,   178,   179,
+     180,   181,   182,   183,   189,   190,   193,   194,   197,   198,
+     201,   202,   207,   208,   209,   210,   211,   212,   213,   214,
+     215,   216,   217,   218,   219,   220,   221,   222,   223,   224,
+     225,   226,   227,   228,   229,   230,   231,   232,   233,   234,
+     235,   236,   239,   240
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1584,14 +1628,26 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 2:
+#line 106 "./syntax.y"
+                     {root = (yyloc).node;}
+#line 1635 "./syntax.tab.c"
+    break;
+
   case 6:
-#line 70 "syntax.y"
-                    {printf("Specifier");}
-#line 1591 "syntax.tab.c"
+#line 114 "./syntax.y"
+                    {printf("Specifier, %d\n" , (yylsp[-1]).first_line);}
+#line 1641 "./syntax.tab.c"
+    break;
+
+  case 7:
+#line 115 "./syntax.y"
+              {printf("gg\n");}
+#line 1647 "./syntax.tab.c"
     break;
 
 
-#line 1595 "syntax.tab.c"
+#line 1651 "./syntax.tab.c"
 
       default: break;
     }
@@ -1829,7 +1885,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 199 "syntax.y"
+#line 243 "./syntax.y"
  
 #include "lex.yy.c"
 void yyerror(char* msg) { 

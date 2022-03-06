@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include"ast.h"
 extern FILE * yyin;
-// #define FLEXDEBUGm
-#define BISONDEBUG
+// #define FLEXDEBUG
+// #define BISONDEBUG
 
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
@@ -31,6 +32,7 @@ int main(int argc, char** argv)
     } 
     yyrestart(f); 
     yyparse(); 
+    st_PrintTree(root , 0 );
     return 0; 
 } 
 #endif
