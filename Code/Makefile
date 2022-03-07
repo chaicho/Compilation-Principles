@@ -34,7 +34,7 @@ syntax-c: $(YFILE)
 # 定义的一些伪目标
 .PHONY: clean test testflex
 test: parser
-	./parser ../Test/test1.cmm > out
+	./parser ../Test/test1.cmm > parser.out 
 testflex:
 	flex ./lexical.l 
 	gcc main.c lex.yy.c -lfl -o scanner 	
