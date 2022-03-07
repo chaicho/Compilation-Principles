@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include"ast.h"
+#include "debug.h"
 extern FILE * yyin;
 // #define FLEXDEBUG
 // #define BISONDEBUG
-
+extern int errlineno;
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
     if(argc > 1){
@@ -25,6 +26,7 @@ int main(int argc, char** argv)
 { 
     if (argc <= 1) return 1; 
     FILE* f = fopen(argv[1], "r"); 
+    assert(0);
     if (!f) 
     { 
         perror(argv[1]); 
@@ -32,7 +34,10 @@ int main(int argc, char** argv)
     } 
     yyrestart(f); 
     yyparse(); 
-    st_PrintTree(root , 0 );
+    if(errlineno ==  -1 ) st_PrintTree(root , 0 );
+    else{
+        printf("gg\n");
+    }
     return 0; 
 } 
 #endif

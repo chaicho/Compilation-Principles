@@ -77,7 +77,8 @@
   extern int yyparse(void); 
   int errlineno = -1;
   StNode * root;
-//   int yydebug=1;
+//   #define YYDEBUG
+  int yydebug=1;
 # define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
 do                                                        \
   if (N)                                                  \
@@ -105,7 +106,7 @@ do                                                        \
     }                                                     \
 while (0)
 
-#line 109 "./syntax.tab.c"
+#line 110 "./syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -148,7 +149,7 @@ while (0)
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 43 "./syntax.y"
+#line 44 "./syntax.y"
 
   #define YYLTYPE YYLTYPE
   typedef struct YYLTYPE
@@ -161,7 +162,7 @@ extern int yydebug;
     struct StNode * node;
   } YYLTYPE;
 
-#line 165 "./syntax.tab.c"
+#line 166 "./syntax.tab.c"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -203,14 +204,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 56 "./syntax.y"
+#line 57 "./syntax.y"
  
    int int_val; 
    float float_val; 
    int relop_val ;
    char *str_val; 
 
-#line 214 "./syntax.tab.c"
+#line 215 "./syntax.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -605,15 +606,15 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   108,   108,   111,   112,   115,   116,   117,   118,   119,
-     122,   123,   127,   128,   131,   132,   133,   136,   137,   140,
-     146,   147,   150,   151,   152,   153,   156,   157,   161,   167,
-     168,   171,   172,   175,   176,   177,   178,   179,   180,   181,
-     182,   183,   184,   185,   191,   192,   195,   196,   199,   200,
-     203,   204,   209,   210,   211,   212,   213,   214,   215,   216,
-     217,   218,   219,   220,   221,   222,   223,   224,   225,   226,
-     227,   228,   229,   230,   231,   232,   233,   234,   235,   236,
-     237,   238,   241,   242
+       0,   109,   109,   112,   113,   116,   117,   118,   119,   120,
+     123,   124,   128,   129,   132,   133,   134,   137,   138,   141,
+     147,   148,   151,   152,   153,   154,   157,   158,   162,   168,
+     169,   172,   173,   176,   177,   178,   179,   180,   181,   182,
+     183,   184,   185,   186,   192,   193,   196,   197,   200,   201,
+     204,   205,   210,   211,   212,   213,   214,   215,   216,   217,
+     218,   219,   220,   221,   222,   223,   224,   225,   226,   227,
+     228,   229,   230,   231,   232,   233,   234,   235,   236,   237,
+     238,   239,   242,   243
 };
 #endif
 
@@ -1631,25 +1632,13 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 108 "./syntax.y"
+#line 109 "./syntax.y"
                      {root = (yyloc).node;}
-#line 1637 "./syntax.tab.c"
-    break;
-
-  case 6:
-#line 116 "./syntax.y"
-                    {printf("Specifier, %d\n" , (yylsp[-1]).first_line);}
-#line 1643 "./syntax.tab.c"
-    break;
-
-  case 7:
-#line 117 "./syntax.y"
-              {printf("gg\n");}
-#line 1649 "./syntax.tab.c"
+#line 1638 "./syntax.tab.c"
     break;
 
 
-#line 1653 "./syntax.tab.c"
+#line 1642 "./syntax.tab.c"
 
       default: break;
     }
@@ -1887,7 +1876,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 245 "./syntax.y"
+#line 246 "./syntax.y"
  
 #include "lex.yy.c"
 void yyerror(char* msg) { 

@@ -44,7 +44,7 @@ TYPE   int|float
 %%
 {INT}   { Log("INT");  yylval.int_val = atoi(yytext);  RETURNT (INT); }
 
-"/\n"    { assert(0);  yycolumn = 1; }
+"\n"    { assert(0);  yycolumn = 1; }
 
 {WS}    { }
 
@@ -55,6 +55,14 @@ TYPE   int|float
     while (c != '\n') c = input();
 }
 
+"/*" {
+    char c = input();
+    while(1){
+        while(c!='*') c = input();
+        c = input();
+        if(c == '/') break;
+    }
+}
 "+"     { Log("PLUS"); RETURNT (PLUS); }
 
 "-"     { Log("MINUS"); RETURNT (MINUS);}
@@ -87,7 +95,7 @@ TYPE   int|float
 "else"   {RETURNT (ELSE);}
 "while"  {RETURNT (WHILE);}
 "return" {RETURNT (RETURN);}
-
+"struct" {RETURNT (STRUCT);}
 {TYPE}  {Log("TYPE"); yylval.str_val = strdup(yytext); RETURNT (TYPE);}
 
 {ID}    {Log("ID"); yylval.str_val = strdup(yytext); RETURNT (ID);} 

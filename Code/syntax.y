@@ -8,7 +8,8 @@
   extern int yyparse(void); 
   int errlineno = -1;
   StNode * root;
-//   int yydebug=1;
+//   #define YYDEBUG
+  int yydebug=1;
 # define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
 do                                                        \
   if (N)                                                  \
@@ -113,8 +114,8 @@ ExtDefList :  /* empty */
    ;
 
 ExtDef :  Specifier ExtDecList ";"
-   | Specifier  ";" {printf("Specifier, %d\n" , @1.first_line);}
-   | error ";"{printf("gg\n");}
+   | Specifier  ";" 
+   | error ";"
    | Specifier FunDec CompSt
    | error FunDec CompSt
    ;
