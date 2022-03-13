@@ -115,9 +115,8 @@ ExtDefList :  /* empty */
 
 ExtDef :  Specifier ExtDecList ";"
    | Specifier  ";" 
-   | error ";"
    | Specifier FunDec CompSt
-   | error FunDec CompSt
+   | error ";" {yyerrork;}
    ;
 
 ExtDecList : VarDec
@@ -173,17 +172,17 @@ StmtList : Stmt StmtList
    | /*  empty */
    ;
 
-Stmt : Exp SEMI
+Stmt : Exp ";"
    | CompSt
-   | RETURN Exp SEMI
+   | RETURN Exp ";"
    | IF "(" Exp ")" Stmt %prec LOWER_THAN_ELSE
    | IF "(" Exp ")" Stmt ELSE Stmt
    | WHILE "(" Exp ")" Stmt
-   | error SEMI
-   | IF "(" error ")" Stmt %prec LOWER_THAN_ELSE
-   | IF "(" error ")" Stmt ELSE Stmt
+   |  error ";"
+   |  error ")" Stmt %prec LOWER_THAN_ELSE
+   |  error ")" Stmt ELSE Stmt
    | IF "(" Exp ")" error ELSE Stmt
-   | WHILE LP error RP Stmt
+   | WHILE error ")" Stmt
    ;
 
 
@@ -193,8 +192,8 @@ DefList : Def DefList
    | /* empty */
    ;
 
-Def : Specifier DecList SEMI
-   | Specifier error SEMI
+Def : Specifier DecList ";"
+   | Specifier error ";"
    ;
 
 DecList : Dec
@@ -246,12 +245,12 @@ Args : Exp COMMA Args
 %% 
 #include "lex.yy.c"
 void yyerror(char* msg) { 
-   if(errlineno == yylineno){
+   if(errlineno == yylineno){ 
       return;
    }
    else{
       errlineno  = yylineno;
    }
-  fprintf(stderr, "Error type B at Line %d: %s near '%s'.\n", yylineno, msg, yytext);
+  printf("Error type B at Line %d: %s near '%s'.\n", yylineno, msg, yytext);
 } 
 

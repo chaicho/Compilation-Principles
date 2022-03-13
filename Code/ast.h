@@ -3,12 +3,12 @@
 #include "syntax.tab.h" 
 typedef struct StNode
 {
-    char name[64];
+    char name[32];
     struct StNode *siblings;
     struct StNode  *child;
     int line_no;
-    int token; //如果token = -1则说明是语法单元,否则说明是词法单元
-    int symbol;
+    int token; // yylex()返回的token的值
+    int symbol; //bison中的
     YYSTYPE st_val;//此时可能会出现内存问题太
     int depth;
 }StNode;
