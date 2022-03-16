@@ -6,6 +6,7 @@ extern FILE * yyin;
 // #define FLEXDEBUG
 // #define BISONDEBUG
 extern int errlineno;
+extern yydebug;
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
     if(argc > 1){
@@ -23,6 +24,7 @@ int main(){
     yyparse();
 }
 #else
+
 int main(int argc, char** argv) 
 { 
     if (argc <= 1) return 1; 
@@ -33,6 +35,7 @@ int main(int argc, char** argv)
         return 1; 
     } 
     yyrestart(f);
+    yydebug = 1;
     yyparse(); 
     if(errlineno ==  -1 ) st_PrintTree(root , 0 );
 

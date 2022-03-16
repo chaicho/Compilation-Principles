@@ -1,11 +1,11 @@
 %option yylineno
 %{
-    #define DEBUG
     #include <string.h>
     #include  "debug.h"
+    #include <stdlib.h>
     #include "syntax.tab.h"
     int yycolumn = 1;
-
+    char *ptr;
     enum{
         LT, LE, GT, GE, EQ, NE
     };
@@ -29,7 +29,7 @@
     return TOKEN;     
 %}
 
-WS   [\r\n\t ]
+WS   [ \r\t]
 DIGIT [0-9]
 DECINT  ([1-9]{DIGIT}*)|0
 OCTINT  0[0-7]+
@@ -41,29 +41,18 @@ FLOAT  {FLOATE}|{FLOATN}
 ch_    [a-zA-Z0-9]|_
 ID     ([a-zA-Z_]{ch_}*)
 TYPE   int|float  
+COMMENT_BLOCK   (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)
 %%
-{INT}   { Log("INT");  yylval.int_val = atoi(yytext);  RETURNT (INT); }
-
-"/\n"    { assert(0);  yycolumn = 1; }
+{OCTINT}   {  yylval.int_val = strtol(yytext ,&ptr, 8);   REJECT; }
+{DECINT}   {  yylval.int_val = strtol(yytext ,&ptr, 10);  REJECT; }
+{HEXINT}   {  yylval.int_val = strtol(yytext ,&ptr, 16);  REJECT; }
+{INT}      {RETURNT(INT);}
+\n   { yycolumn = 1; }
 
 {WS}    { }
 
 {FLOAT} { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); RETURNT (FLOAT);}
-
-"//" {
-    char c = input();
-    while (c != '\n') c = input();
-}
-
-
-"/*" {
-    char c = input();
-    while(1){
-        while(c!='*') c = input();
-        c = input();
-        if(c == '/') break;
-    }
-}
+{COMMENT_BLOCK}  { }
 
 "+"     { Log("PLUS"); RETURNT (PLUS); }
 
@@ -114,9 +103,8 @@ TYPE   int|float
     }
 }
 
-. {
- printf("Error type A at Line %d: Mysterious characters \'%s\'\n",
- yylineno, yytext);
+. { 
+    flexerror( "Mysterious character"); 
  }
 %%
 inline void   installID(){
@@ -124,6 +112,12 @@ inline void   installID(){
 }
 inline void   installrelop(int relop_type){
     yylval.relop_val =  relop_type; 
+}
+
+void flexerror(const char* msg) {
+  if ( errlineno  == yylineno) return;
+  else errlineno = yylineno;
+  printf("Error type A at Line %d: %s\n", yylineno, msg);
 }
 /* #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){

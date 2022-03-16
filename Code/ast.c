@@ -37,7 +37,7 @@ void st_PrintTree(StNode * node,int depth){
                 switch (node->token)
                 {
                 case    INT:
-                        printf(": %d",node->st_val.int_val);
+                        printf(": %u",node->st_val.int_val);
                         break;
                 case    FLOAT:
                         printf(": %f",node->st_val.float_val);

@@ -8,8 +8,8 @@
   extern int yyparse(void); 
   int errlineno = -1;
   StNode * root;
-//   #define YYDEBUG
   int yydebug=1;
+//   #define YYDEBUG 1
 # define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
 do                                                        \
   if (N)                                                  \
@@ -116,7 +116,7 @@ ExtDefList :  /* empty */
 ExtDef :  Specifier ExtDecList ";"
    | Specifier  ";" 
    | Specifier FunDec CompSt
-   | error ";" {yyerrork;}
+   | error ";" {yyerrok;}
    ;
 
 ExtDecList : VarDec
@@ -129,7 +129,7 @@ Specifier  : TYPE
    ;
 
 StructSpecifier : STRUCT OptTag "{" DefList "}"
-   | STRUCT OptTag "{"  error "}"
+   | STRUCT OptTag "{"  error "}" {yyerrok;}
    | STRUCT Tag
    ;
 
@@ -148,7 +148,7 @@ VarDec : ID
    ;
 
 FunDec : ID "(" VarList ")"
-   | ID "(" error ")"
+   | ID "(" error ")" { yyerrok;}
    | ID "(" ")"
    | error ")"
    ;
@@ -165,7 +165,7 @@ ParamDec : Specifier VarDec
 
 /* statements */
 CompSt : "{" DefList StmtList "}"
-   | error "}"
+   | error "}" {yyerrok;}
    ;
 
 StmtList : Stmt StmtList
@@ -178,11 +178,11 @@ Stmt : Exp ";"
    | IF "(" Exp ")" Stmt %prec LOWER_THAN_ELSE
    | IF "(" Exp ")" Stmt ELSE Stmt
    | WHILE "(" Exp ")" Stmt
-   |  error ";"
-   |  error ")" Stmt %prec LOWER_THAN_ELSE
-   |  error ")" Stmt ELSE Stmt
-   | IF "(" Exp ")" error ELSE Stmt
-   | WHILE error ")" Stmt
+   |  error ";"  {yyerrok;}
+   |  error ")" Stmt %prec LOWER_THAN_ELSE {yyerrok;}
+   |  error ")" Stmt ELSE Stmt   {yyerrok;}
+   | IF "(" Exp ")" error ELSE Stmt {yyerrok;}
+   | WHILE error ")" Stmt    {yyerrok;}
    ;
 
 
@@ -193,7 +193,7 @@ DefList : Def DefList
    ;
 
 Def : Specifier DecList ";"
-   | Specifier error ";"
+   | Specifier error ";" {yyerrok;}
    ;
 
 DecList : Dec
@@ -224,15 +224,15 @@ Exp : Exp "=" Exp
    | ID
    | INT
    | FLOAT
-   | "(" error ")"
-   | "(" error "]"
-   | "(" error "}"
-   | "(" error ";"
-   | ID "(" error ")"
-   | ID "(" error "]"
-   | ID "(" error "}"
-   | ID "(" error ";"
-   | Exp "[" error "]"
+   | "(" error ")" {yyerrok;}
+   | "(" error "]"{yyerrok;}
+   | "(" error "}"{yyerrok;}
+   | "(" error ";"{yyerrok;}
+   | ID "(" error ")"{yyerrok;}
+   | ID "(" error "]"{yyerrok;}
+   | ID "(" error "}"{yyerrok;}
+   | ID "(" error ";"{yyerrok;}
+   | Exp "[" error "]"{yyerrok;}
    | Exp "[" Exp ")"
    | Exp "[" Exp "}"
    | Exp "[" Exp ";"
@@ -251,6 +251,7 @@ void yyerror(char* msg) {
    else{
       errlineno  = yylineno;
    }
-  printf("Error type B at Line %d: %s near '%s'.\n", yylineno, msg, yytext);
+  
+  printf("Error type B at Line %d: %s.\n", yylineno, msg);
 } 
 

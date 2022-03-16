@@ -77,8 +77,8 @@
   extern int yyparse(void); 
   int errlineno = -1;
   StNode * root;
-//   #define YYDEBUG
   int yydebug=1;
+//   #define YYDEBUG 1
 # define YYLLOC_DEFAULT(Cur, Rhs, N)                      \
 do                                                        \
   if (N)                                                  \
@@ -682,9 +682,9 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,    11,    16,     0,     2,     0,     0,    12,     7,
+       0,     0,    11,    16,     0,     2,     0,     0,    12,     8,
       18,     0,    15,     1,     4,     0,     6,    19,     0,     9,
-       0,     0,    24,     0,     5,     0,     0,     0,    44,     8,
+       0,     0,    24,     0,     5,     0,     0,     0,    44,     7,
        0,     0,     0,    44,     0,    23,     0,     0,    26,    19,
       10,     0,    29,     0,    14,     0,    49,     0,    47,    13,
       43,    22,    27,    21,     0,    20,     0,    67,    68,     0,
@@ -830,7 +830,7 @@ static const yytype_int8 yyr1[] =
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3,     2,     2,     3,     1,
+       0,     2,     1,     0,     2,     3,     2,     3,     2,     1,
        3,     1,     1,     5,     5,     2,     0,     1,     1,     1,
        4,     4,     4,     3,     2,     3,     1,     2,     4,     2,
        2,     0,     2,     1,     3,     5,     7,     5,     2,     3,
@@ -1634,8 +1634,122 @@ yyreduce:
 #line 1635 "./syntax.tab.c"
     break;
 
+  case 8:
+#line 119 "./syntax.y"
+               {yyerrok;}
+#line 1641 "./syntax.tab.c"
+    break;
 
-#line 1639 "./syntax.tab.c"
+  case 14:
+#line 132 "./syntax.y"
+                                  {yyerrok;}
+#line 1647 "./syntax.tab.c"
+    break;
+
+  case 22:
+#line 151 "./syntax.y"
+                      { yyerrok;}
+#line 1653 "./syntax.tab.c"
+    break;
+
+  case 29:
+#line 168 "./syntax.y"
+               {yyerrok;}
+#line 1659 "./syntax.tab.c"
+    break;
+
+  case 38:
+#line 181 "./syntax.y"
+                 {yyerrok;}
+#line 1665 "./syntax.tab.c"
+    break;
+
+  case 39:
+#line 182 "./syntax.y"
+                                           {yyerrok;}
+#line 1671 "./syntax.tab.c"
+    break;
+
+  case 40:
+#line 183 "./syntax.y"
+                                 {yyerrok;}
+#line 1677 "./syntax.tab.c"
+    break;
+
+  case 41:
+#line 184 "./syntax.y"
+                                    {yyerrok;}
+#line 1683 "./syntax.tab.c"
+    break;
+
+  case 42:
+#line 185 "./syntax.y"
+                             {yyerrok;}
+#line 1689 "./syntax.tab.c"
+    break;
+
+  case 46:
+#line 196 "./syntax.y"
+                         {yyerrok;}
+#line 1695 "./syntax.tab.c"
+    break;
+
+  case 69:
+#line 227 "./syntax.y"
+                   {yyerrok;}
+#line 1701 "./syntax.tab.c"
+    break;
+
+  case 70:
+#line 228 "./syntax.y"
+                  {yyerrok;}
+#line 1707 "./syntax.tab.c"
+    break;
+
+  case 71:
+#line 229 "./syntax.y"
+                  {yyerrok;}
+#line 1713 "./syntax.tab.c"
+    break;
+
+  case 72:
+#line 230 "./syntax.y"
+                  {yyerrok;}
+#line 1719 "./syntax.tab.c"
+    break;
+
+  case 73:
+#line 231 "./syntax.y"
+                     {yyerrok;}
+#line 1725 "./syntax.tab.c"
+    break;
+
+  case 74:
+#line 232 "./syntax.y"
+                     {yyerrok;}
+#line 1731 "./syntax.tab.c"
+    break;
+
+  case 75:
+#line 233 "./syntax.y"
+                     {yyerrok;}
+#line 1737 "./syntax.tab.c"
+    break;
+
+  case 76:
+#line 234 "./syntax.y"
+                     {yyerrok;}
+#line 1743 "./syntax.tab.c"
+    break;
+
+  case 77:
+#line 235 "./syntax.y"
+                      {yyerrok;}
+#line 1749 "./syntax.tab.c"
+    break;
+
+
+#line 1753 "./syntax.tab.c"
 
       default: break;
     }
@@ -1877,12 +1991,13 @@ yyreturn:
  
 #include "lex.yy.c"
 void yyerror(char* msg) { 
-   if(errlineno == yylineno){
+   if(errlineno == yylineno){ 
       return;
    }
    else{
       errlineno  = yylineno;
    }
-  fprintf(stderr, "Error type B at Line %d: %s near '%s'.\n", yylineno, msg, yytext);
+  
+  printf("Error type B at Line %d: %s.\n", yylineno, msg);
 } 
 
