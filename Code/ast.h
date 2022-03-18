@@ -3,7 +3,7 @@
 #include "syntax.tab.h" 
 typedef struct StNode
 {
-    char name[128];
+    const char *name;
     struct StNode *siblings;
     struct StNode  *child;
     int line_no;

@@ -1,0 +1,11 @@
+int main ()
+{
+    /*
+    comment
+    /*
+    nested comment
+    */
+    */
+    // /*fuck*/
+    int i = 1;
+}

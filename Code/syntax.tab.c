@@ -1652,104 +1652,98 @@ yyreduce:
 #line 1653 "./syntax.tab.c"
     break;
 
-  case 29:
-#line 168 "./syntax.y"
-               {yyerrok;}
-#line 1659 "./syntax.tab.c"
-    break;
-
   case 38:
 #line 181 "./syntax.y"
                  {yyerrok;}
-#line 1665 "./syntax.tab.c"
+#line 1659 "./syntax.tab.c"
     break;
 
   case 39:
 #line 182 "./syntax.y"
                                            {yyerrok;}
-#line 1671 "./syntax.tab.c"
+#line 1665 "./syntax.tab.c"
     break;
 
   case 40:
 #line 183 "./syntax.y"
                                  {yyerrok;}
-#line 1677 "./syntax.tab.c"
+#line 1671 "./syntax.tab.c"
     break;
 
   case 41:
 #line 184 "./syntax.y"
                                     {yyerrok;}
-#line 1683 "./syntax.tab.c"
+#line 1677 "./syntax.tab.c"
     break;
 
   case 42:
 #line 185 "./syntax.y"
                              {yyerrok;}
-#line 1689 "./syntax.tab.c"
+#line 1683 "./syntax.tab.c"
     break;
 
   case 46:
 #line 196 "./syntax.y"
                          {yyerrok;}
-#line 1695 "./syntax.tab.c"
+#line 1689 "./syntax.tab.c"
     break;
 
   case 69:
 #line 227 "./syntax.y"
                    {yyerrok;}
-#line 1701 "./syntax.tab.c"
+#line 1695 "./syntax.tab.c"
     break;
 
   case 70:
 #line 228 "./syntax.y"
                   {yyerrok;}
-#line 1707 "./syntax.tab.c"
+#line 1701 "./syntax.tab.c"
     break;
 
   case 71:
 #line 229 "./syntax.y"
                   {yyerrok;}
-#line 1713 "./syntax.tab.c"
+#line 1707 "./syntax.tab.c"
     break;
 
   case 72:
 #line 230 "./syntax.y"
                   {yyerrok;}
-#line 1719 "./syntax.tab.c"
+#line 1713 "./syntax.tab.c"
     break;
 
   case 73:
 #line 231 "./syntax.y"
                      {yyerrok;}
-#line 1725 "./syntax.tab.c"
+#line 1719 "./syntax.tab.c"
     break;
 
   case 74:
 #line 232 "./syntax.y"
                      {yyerrok;}
-#line 1731 "./syntax.tab.c"
+#line 1725 "./syntax.tab.c"
     break;
 
   case 75:
 #line 233 "./syntax.y"
                      {yyerrok;}
-#line 1737 "./syntax.tab.c"
+#line 1731 "./syntax.tab.c"
     break;
 
   case 76:
 #line 234 "./syntax.y"
                      {yyerrok;}
-#line 1743 "./syntax.tab.c"
+#line 1737 "./syntax.tab.c"
     break;
 
   case 77:
 #line 235 "./syntax.y"
                       {yyerrok;}
-#line 1749 "./syntax.tab.c"
+#line 1743 "./syntax.tab.c"
     break;
 
 
-#line 1753 "./syntax.tab.c"
+#line 1747 "./syntax.tab.c"
 
       default: break;
     }

@@ -7,7 +7,8 @@ extern StNode * root;
 StNode * st_NodeInit(const char * nname){
         StNode * curnode = (StNode *) malloc(sizeof(StNode));
         curnode->line_no = -1;  
-        strncpy(curnode->name,nname, 63);
+        // strncpy(curnode->name,nname, 63);
+        curnode->name =nname;
         curnode->siblings = 0; 
         curnode->child = 0;
         curnode->token = -1;

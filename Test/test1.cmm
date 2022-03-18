@@ -1,8 +1,13 @@
+int func()
+{
+  int i = 10;
+  return i;
+}
+
 int main()
 {
-// line comment
-/*
-block comment
-*/
-int i = 1;
+  int i;
+  int i, j
+  ;
+  i = func();
 }

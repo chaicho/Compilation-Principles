@@ -41,7 +41,7 @@ FLOAT  {FLOATE}|{FLOATN}
 ch_    [a-zA-Z0-9]|_
 ID     ([a-zA-Z_]{ch_}*)
 TYPE   int|float  
-COMMENT_BLOCK   (\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)
+COMMENT_BLOCK   (\/\*([^*]|(\*+([^*\/])))*\*+\/)|(\/\/.*)
 %%
 {OCTINT}   {  yylval.int_val = strtol(yytext ,&ptr, 8);   REJECT; }
 {DECINT}   {  yylval.int_val = strtol(yytext ,&ptr, 10);  REJECT; }

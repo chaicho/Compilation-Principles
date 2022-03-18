@@ -165,7 +165,7 @@ ParamDec : Specifier VarDec
 
 /* statements */
 CompSt : "{" DefList StmtList "}"
-   | error "}" {yyerrok;}
+   | error "}"
    ;
 
 StmtList : Stmt StmtList
