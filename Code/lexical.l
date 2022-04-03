@@ -16,15 +16,14 @@
         yycolumn += yyleng;
     #define STR(s) #s
     extern YYLTYPE yylloc;
-    #define RETURNT(TOKEN)\                       
-    do{              \      
+    #define RETURNT(TOKEN)\
+    do{\
         yylloc.node = st_NodeInit(#TOKEN);\
         StNode * curnode = yylloc.node;\
-        curnode->line_no = yylloc.first_line; \ 
-        curnode->st_val = yylval;\  
-        curnode->token = TOKEN; \
-        Log("%s %d %d",curnode->name,curnode->line_no, TOKEN);\
-    }                                           \              
+        curnode->line_no = yylloc.first_line;\
+        curnode->st_val = yylval;\
+        curnode->token = TOKEN;\
+    }                                           \
     while (0);                                  \
     return TOKEN;     
 %}
@@ -41,7 +40,8 @@ FLOAT  {FLOATE}|{FLOATN}
 ch_    [a-zA-Z0-9]|_
 ID     ([a-zA-Z_]{ch_}*)
 TYPE   int|float  
-COMMENT_BLOCK   (\/\*([^*]|(\*+([^*\/])))*\*+\/)|(\/\/.*)
+COMMENT_LINE   (\/\/.*[\n])
+COMMENT_BLOCK   (\/\*([^*]|(\*+([^*\/])))*\*+\/)
 %%
 {OCTINT}   {  yylval.int_val = strtol(yytext ,&ptr, 8);   REJECT; }
 {DECINT}   {  yylval.int_val = strtol(yytext ,&ptr, 10);  REJECT; }
@@ -52,44 +52,45 @@ COMMENT_BLOCK   (\/\*([^*]|(\*+([^*\/])))*\*+\/)|(\/\/.*)
 {WS}    { }
 
 {FLOAT} { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); RETURNT (FLOAT);}
+{COMMENT_LINE} {}
 {COMMENT_BLOCK}  { }
 
-"+"     { Log("PLUS"); RETURNT (PLUS); }
+"+"     {  RETURNT (PLUS); }
 
-"-"     { Log("MINUS"); RETURNT (MINUS);}
+"-"     {  RETURNT (MINUS);}
 
-"*"     { Log("MULTIPLY"); RETURNT (STAR);}
+"*"     {  RETURNT (STAR);}
 
-"/"     { Log("DIVIDE"); RETURNT (DIV);}
+"/"     {  RETURNT (DIV);}
 
-"<"     { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
-">"     { Log("GT") ;installrelop(GT); RETURNT (RELOP);}
-"=="    { Log("EQ") ;installrelop(EQ); RETURNT (RELOP);}
-"!="    { Log("NE") ;installrelop(NE); RETURNT (RELOP);}
-"<="    { Log("LE") ;installrelop(LE); RETURNT (RELOP);}
-">="    { Log("GE") ;installrelop(GE); RETURNT (RELOP);}
-"("     { Log("LP") ;RETURNT (LP) ;}
-")"     { Log("RP") ;RETURNT (RP) ;}
-"["     { Log("LB") ;RETURNT (LB) ;}
-"]"     { Log("RB") ;RETURNT (RB) ;}
-"{"     { Log("LC") ;RETURNT (LC) ;}
-"}"     { Log("RC") ;RETURNT (RC) ;}
-";"     { Log(";")  ;RETURNT (SEMI);}
-"="     { Log("=")  ;RETURNT (ASSIGNOP); }
-"||"    { Log("||") ;RETURNT (OR);}
-"&&"    { Log("&&") ;RETURNT (AND);}
-"."     { Log(".") ;RETURNT (DOT);}
-"!"     { Log("!") ;RETURNT (NOT);}
-","     { Log(",") ;RETURNT (COMMA);}
+"<"     { installrelop(LE); RETURNT (RELOP);}
+">"     { installrelop(GT); RETURNT (RELOP);}
+"=="    { installrelop(EQ); RETURNT (RELOP);}
+"!="    { installrelop(NE); RETURNT (RELOP);}
+"<="    { installrelop(LE); RETURNT (RELOP);}
+">="    { installrelop(GE); RETURNT (RELOP);}
+"("     { RETURNT (LP) ;}
+")"     { RETURNT (RP) ;}
+"["     { RETURNT (LB) ;}
+"]"     { RETURNT (RB) ;}
+"{"     { RETURNT (LC) ;}
+"}"     { RETURNT (RC) ;}
+";"     { RETURNT (SEMI);}
+"="     { RETURNT (ASSIGNOP); }
+"||"    { RETURNT (OR);}
+"&&"    { RETURNT (AND);}
+"."     { RETURNT (DOT);}
+"!"     { RETURNT (NOT);}
+","     { RETURNT (COMMA);}
 
 "if"     {RETURNT (IF);}
 "else"   {RETURNT (ELSE);}
 "while"  {RETURNT (WHILE);}
 "return" {RETURNT (RETURN);}
 "struct" {RETURNT (STRUCT);}
-{TYPE}  {Log("TYPE"); yylval.str_val = strdup(yytext); RETURNT (TYPE);}
+{TYPE}  { yylval.str_val = strdup(yytext); RETURNT (TYPE);}
 
-{ID}    {Log("ID"); yylval.str_val = strdup(yytext); RETURNT (ID);} 
+{ID}    { yylval.str_val = strdup(yytext); RETURNT (ID);} 
 
 
 \"[^\"]*\" {

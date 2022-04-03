@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include"ast.h"
 #include "debug.h"
-// #include "assert.h"
+#include "semantic.h"
 extern FILE * yyin;
 // #define FLEXDEBUG
 // #define BISONDEBUG
@@ -37,8 +37,11 @@ int main(int argc, char** argv)
     yyrestart(f);
     yydebug = 1;
     yyparse(); 
-    if(errlineno ==  -1 ) st_PrintTree(root , 0 );
-
+    if(errlineno ==  -1 ) {
+        st_PrintTree(root , 0 );
+        parse_tree(root);
+        assert(0);
+    }
     return 0; 
 } 
 #endif

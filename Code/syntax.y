@@ -3,6 +3,7 @@
   #include <stdio.h> 
   #include "ast.h"
   #include "debug.h"
+  #include <assert.h>
   extern int yylex(void); 
    // 在此声明，消除yacc生成代码时的告警
   extern int yyparse(void); 
@@ -21,9 +22,10 @@ do                                                        \
       \                                                              
       (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
       (Cur).node->symbol =  yyr1[yyn];                   \
-      (Cur).node->line_no = (Cur).first_line;           \                
+      (Cur).node->line_no = (Cur).first_line;           \               
       (Cur).node->child = YYRHSLOC(Rhs,1).node;\
       for(int i = 1; i < N ; ++i) {\
+         assert(YYRHSLOC(Rhs,i).node!= NULL  & YYRHSLOC(Rhs,i).node!=NULL);  \
          YYRHSLOC(Rhs,i).node->siblings =  YYRHSLOC(Rhs,i + 1).node;\
       }\
       YYRHSLOC(Rhs,N).node -> siblings = NULL ;\
@@ -34,6 +36,10 @@ do                                                        \
         YYRHSLOC(Rhs, 0).last_line;                       \
       (Cur).first_column = (Cur).last_column =            \
         YYRHSLOC(Rhs, 0).last_column;                     \
+      (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
+      (Cur).node->symbol =  yyr1[yyn];                   \
+      (Cur).node->line_no = (Cur).first_line;           \
+      (Cur).node->is_empty = 1; \  
     }                                                     \
 while (0)
 %} 
@@ -116,7 +122,9 @@ ExtDefList :  /* empty */
 ExtDef :  Specifier ExtDecList ";"
    | Specifier  ";" 
    | Specifier FunDec CompSt
-   | error ";" {yyerrok;}
+   | error CompSt { yyerrok; }
+   | error ExtDecList ";" { yyerrok;}
+   | error ";" { yyerrok; }
    ;
 
 ExtDecList : VarDec
@@ -130,6 +138,7 @@ Specifier  : TYPE
 
 StructSpecifier : STRUCT OptTag "{" DefList "}"
    | STRUCT OptTag "{"  error "}" {yyerrok;}
+   | STRUCT error DefList "}" {yyerrok;}
    | STRUCT Tag
    ;
 
@@ -145,6 +154,7 @@ Tag  :  ID
 
 VarDec : ID
    | VarDec "[" INT "]"
+   | VarDec  error "]"  {yyerrok;}
    ;
 
 FunDec : ID "(" VarList ")"
@@ -165,7 +175,8 @@ ParamDec : Specifier VarDec
 
 /* statements */
 CompSt : "{" DefList StmtList "}"
-   | error "}"
+   | error "}" { yyerrok;}
+   | error "{" DefList StmtList "}" {yyerrok;}
    ;
 
 StmtList : Stmt StmtList
@@ -181,7 +192,7 @@ Stmt : Exp ";"
    |  error ";"  {yyerrok;}
    |  error ")" Stmt %prec LOWER_THAN_ELSE {yyerrok;}
    |  error ")" Stmt ELSE Stmt   {yyerrok;}
-   | IF "(" Exp ")" error ELSE Stmt {yyerrok;}
+   |  error ELSE Stmt  {yyerrok;}
    | WHILE error ")" Stmt    {yyerrok;}
    ;
 
@@ -221,37 +232,39 @@ Exp : Exp "=" Exp
    | ID "(" ")"
    | Exp "[" Exp "]"
    | Exp "." ID
-   | ID
+   | ID {Log("gg");}
    | INT
    | FLOAT
-   | "(" error ")" {yyerrok;}
-   | "(" error "]"{yyerrok;}
-   | "(" error "}"{yyerrok;}
-   | "(" error ";"{yyerrok;}
-   | ID "(" error ")"{yyerrok;}
-   | ID "(" error "]"{yyerrok;}
-   | ID "(" error "}"{yyerrok;}
-   | ID "(" error ";"{yyerrok;}
-   | Exp "[" error "]"{yyerrok;}
    | Exp "[" Exp ")"
    | Exp "[" Exp "}"
    | Exp "[" Exp ";"
+   | "(" error ")" { yyerrok; }
+   | "(" error "]"{ yyerrok; }
+   | "(" error "}"{ yyerrok; }
+   | ID "(" error ")"{ yyerrok;}
+   | ID "(" error "]"{ yyerrok;}
+   | ID "(" error "}"{ yyerrok;}
+   | Exp "[" error "]"{ yyerrok;}
+   | error  "+"  Exp { yyerrok;}
+   | error  "-"  Exp { yyerrok;}
+   | error  "*"  Exp { yyerrok;}
+   | error  "/"  Exp { yyerrok;}
    ;
 
-Args : Exp COMMA Args
+Args : Exp "," Args
    | Exp
    ;
 
 %% 
 #include "lex.yy.c"
 void yyerror(char* msg) { 
+   
    if(errlineno == yylineno){ 
       return;
    }
    else{
       errlineno  = yylineno;
    }
-  
   printf("Error type B at Line %d: %s.\n", yylineno, msg);
 } 
 

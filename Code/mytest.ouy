@@ -1,0 +1,14 @@
+rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output
+rm -f ./ast.o ./hashtable.o ./lex.yy.o ./main.o ./semantic.o ./symbol.o ./syntax.tab.o ./ast.d ./hashtable.d ./lex.yy.d ./main.d ./semantic.d ./symbol.d ./syntax.tab.d
+rm -f ./lex.yy.c ./syntax.tab.c ./syntax.tab.h
+rm -f *~
+flex -o ./lex.yy.c ./lexical.l
+bison -o ./syntax.tab.c -d -v ./syntax.y
+gcc -c ./syntax.tab.c -o ./syntax.tab.o
+gcc -std=c99   -c -o ast.o ast.c
+gcc -std=c99   -c -o hashtable.o hashtable.c
+gcc -std=c99   -c -o main.o main.c
+gcc -std=c99   -c -o semantic.o semantic.c
+gcc -std=c99   -c -o symbol.o symbol.c
+gcc -o parser ./ast.o ./hashtable.o ./main.o ./semantic.o ./symbol.o ./syntax.tab.o -lfl -ly
+./parser ../Test/test1.cmm

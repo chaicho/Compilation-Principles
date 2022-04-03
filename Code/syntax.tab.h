@@ -44,7 +44,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 44 "./syntax.y"
+#line 50 "./syntax.y"
 
   #define YYLTYPE YYLTYPE
   typedef struct YYLTYPE
@@ -99,7 +99,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 57 "./syntax.y"
+#line 63 "./syntax.y"
  
    int int_val; 
    float float_val; 

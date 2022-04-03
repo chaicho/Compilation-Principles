@@ -1,12 +1,14 @@
 #ifndef __AST__
 #define __AST__
 #include "syntax.tab.h" 
+
 typedef struct StNode
 {
     const char *name;
     struct StNode *siblings;
     struct StNode  *child;
     int line_no;
+    int is_empty;
     int token; // yylex()返回的token的值
     int symbol; //bison中的
     YYSTYPE st_val;//此时可能会出现内存问题太

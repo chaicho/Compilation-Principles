@@ -14,6 +14,7 @@ StNode * st_NodeInit(const char * nname){
         curnode->token = -1;
         curnode->symbol = -1;
         curnode->depth =  0;
+        curnode ->is_empty = 0;
         return curnode;
 }
 StNode * st_Insert(StNode * cur, StNode *nxt){
@@ -28,7 +29,7 @@ StNode * st_Insert(StNode * cur, StNode *nxt){
 }
 
 void st_PrintTree(StNode * node,int depth){
-        if(node == NULL) return;
+        if(node == NULL || node -> is_empty == 1) return;
         for(int i = 0 ; i < depth; i++)  printf("  ");
         printf("%s",node->name);
         if(node->symbol!=-1) {
