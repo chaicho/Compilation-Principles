@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     if(errlineno ==  -1 ) {
         st_PrintTree(root , 0 );
         parse_tree(root);
-        assert(0);
+        // assert(0);
     }
     return 0; 
 } 

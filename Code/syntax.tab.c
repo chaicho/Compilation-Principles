@@ -1744,7 +1744,7 @@ yyreduce:
 
   case 71:
 #line 235 "./syntax.y"
-        {Log("gg");}
+        {}
 #line 1749 "./syntax.tab.c"
     break;
 

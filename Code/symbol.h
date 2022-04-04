@@ -37,12 +37,17 @@ typedef struct Symbol_* Symbol;
 
 struct Symbol_
 {
-   Type  type;
    char * name;
+   enum{SYM_STRUCT,SYM_FUNCTION,SYM_VAR} kind;
    Symbol  next;
+   Type  type;
 };
 Type Basic_Init(StNode * );
-Type Struct_Init(StNode * );
+Type Struct_Init();
 Type Function_Init(StNode *,Type);
 FieldList Field_Init(StNode *);
+Symbol Symbol_Init(Type curtype, int symbol_kind);
+void print_type(Type,int);
+void ConcatField(FieldList cur,FieldList nxt);
+
 #endif

@@ -1,5 +1,5 @@
 #include "hashtable.h"
-
+#include "debug.h"
 const int  TABLE_SIZE = 0X3fff;
 HashTable * SymbolTable;
 unsigned hash_pjw(char* name)
@@ -36,6 +36,7 @@ void* HT_Insert(HashTable * hasht, char* key, Symbol data)
 	HashElem * cur = malloc(sizeof(HashElem));
   cur->key = malloc(strlen(key) + 1);
 	strcpy(cur->key, key);
+	Log("Insert : %s",cur->key);
 	cur->data = data;
 	hasht->ele_count ++;
   cur->next = hasht->table[h];
@@ -43,14 +44,16 @@ void* HT_Insert(HashTable * hasht, char* key, Symbol data)
 	return cur;
 }
 
-void* HT_Find(HashTable * hasht, char* key)
+Symbol HT_Find(HashTable * hasht, char* key)
 {
 	unsigned h = hash_pjw(key) % hasht->ele_max;
 	HashElem * cur = hasht->table[h];
 	while(cur != NULL)
 	{
-		if(!strcmp(cur->key, key))
+		if(!strcmp(cur->key, key)){
+			Log("Found : %s",cur->key);
 			return cur->data;
+		}
 		cur = cur->next;
 	}
 	return NULL;

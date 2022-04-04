@@ -232,7 +232,7 @@ Exp : Exp "=" Exp
    | ID "(" ")"
    | Exp "[" Exp "]"
    | Exp "." ID
-   | ID {Log("gg");}
+   | ID {}
    | INT
    | FLOAT
    | Exp "[" Exp ")"

@@ -18,7 +18,7 @@ typedef struct HashElem_ {
 unsigned hash_pjw(char* name);
 HashTable * HT_Init( );
 void* HT_Insert(HashTable * hasht, char* key, Symbol data);
-void* HT_Find(HashTable * hasht, char* key);
+Symbol HT_Find(HashTable * hasht, char* key);
 void HT_Remove(HashTable* hasht, char* key);
 
 #endif
