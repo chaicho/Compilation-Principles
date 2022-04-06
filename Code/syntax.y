@@ -232,12 +232,9 @@ Exp : Exp "=" Exp
    | ID "(" ")"
    | Exp "[" Exp "]"
    | Exp "." ID
-   | ID {}
+   | ID 
    | INT
    | FLOAT
-   | Exp "[" Exp ")"
-   | Exp "[" Exp "}"
-   | Exp "[" Exp ";"
    | "(" error ")" { yyerrok; }
    | "(" error "]"{ yyerrok; }
    | "(" error "}"{ yyerrok; }

@@ -93,37 +93,34 @@ Grammar
    70    | ID
    71    | "int"
    72    | "float"
-   73    | Exp "[" Exp ")"
-   74    | Exp "[" Exp "}"
-   75    | Exp "[" Exp ";"
-   76    | "(" error ")"
-   77    | "(" error "]"
-   78    | "(" error "}"
-   79    | ID "(" error ")"
-   80    | ID "(" error "]"
-   81    | ID "(" error "}"
-   82    | Exp "[" error "]"
-   83    | error "+" Exp
-   84    | error "-" Exp
-   85    | error "*" Exp
-   86    | error "/" Exp
+   73    | "(" error ")"
+   74    | "(" error "]"
+   75    | "(" error "}"
+   76    | ID "(" error ")"
+   77    | ID "(" error "]"
+   78    | ID "(" error "}"
+   79    | Exp "[" error "]"
+   80    | error "+" Exp
+   81    | error "-" Exp
+   82    | error "*" Exp
+   83    | error "/" Exp
 
-   87 Args: Exp "," Args
-   88     | Exp
+   84 Args: Exp "," Args
+   85     | Exp
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    error (256) 7 8 9 15 16 23 25 27 32 33 42 43 44 45 46 50 76 77 78 79 80 81 82 83 84 85 86
+    error (256) 7 8 9 15 16 23 25 27 32 33 42 43 44 45 46 50 73 74 75 76 77 78 79 80 81 82 83
     "int" <int_val> (258) 22 71
     "float" <float_val> (259) 72
-    "+" (260) 59 83
-    "-" (261) 60 64 84
-    "*" (262) 61 85
-    "/" (263) 62 86
-    ";" (264) 4 5 8 9 36 38 42 49 50 75
-    "," (265) 11 28 52 87
+    "+" (260) 59 80
+    "-" (261) 60 64 81
+    "*" (262) 61 82
+    "/" (263) 62 83
+    ";" (264) 4 5 8 9 36 38 42 49 50
+    "," (265) 11 28 52 84
     "=" (266) 54 55
     RELOP (267) 58
     "&&" (268) 56
@@ -131,13 +128,13 @@ Terminals, with rules where they appear
     "." (270) 69
     "!" (271) 65
     TYPE (272) 12
-    ID (273) 19 20 21 24 25 26 66 67 69 70 79 80 81
-    "(" (274) 24 25 26 39 40 41 63 66 67 76 77 78 79 80 81
-    ")" (275) 24 25 26 27 39 40 41 43 44 46 63 66 67 73 76 79
-    "[" (276) 22 68 73 74 75 82
-    "]" (277) 22 23 68 77 80 82
+    ID (273) 19 20 21 24 25 26 66 67 69 70 76 77 78
+    "(" (274) 24 25 26 39 40 41 63 66 67 73 74 75 76 77 78
+    ")" (275) 24 25 26 27 39 40 41 43 44 46 63 66 67 73 76
+    "[" (276) 22 68 79
+    "]" (277) 22 23 68 74 77 79
     "{" (278) 14 15 31 33
-    "}" (279) 14 15 16 31 32 33 74 78 81
+    "}" (279) 14 15 16 31 32 33 75 78
     STRUCT (280) 14 15 16 17
     IF (281) 39 40
     ELSE (282) 40 44 45
@@ -208,11 +205,11 @@ Nonterminals, with rules where they appear
         on left: 53 54
         on right: 51 52
     Exp (51)
-        on left: 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86
-        on right: 36 38 39 40 41 54 55 56 57 58 59 60 61 62 63 64 65 68 69 73 74 75 82 83 84 85 86 87 88
+        on left: 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83
+        on right: 36 38 39 40 41 54 55 56 57 58 59 60 61 62 63 64 65 68 69 79 80 81 82 83 84 85
     Args (52)
-        on left: 87 88
-        on right: 66 87
+        on left: 84 85
+        on right: 66 84
 
 
 State 0
@@ -723,10 +720,10 @@ State 47
    43     | error . ")" Stmt
    44     | error . ")" Stmt ELSE Stmt
    45     | error . ELSE Stmt
-   83 Exp: error . "+" Exp
-   84    | error . "-" Exp
-   85    | error . "*" Exp
-   86    | error . "/" Exp
+   80 Exp: error . "+" Exp
+   81    | error . "-" Exp
+   82    | error . "*" Exp
+   83    | error . "/" Exp
 
     "+"   shift, and go to state 78
     "-"   shift, and go to state 79
@@ -788,9 +785,9 @@ State 52
    66 Exp: ID . "(" Args ")"
    67    | ID . "(" ")"
    70    | ID .
-   79    | ID . "(" error ")"
-   80    | ID . "(" error "]"
-   81    | ID . "(" error "}"
+   76    | ID . "(" error ")"
+   77    | ID . "(" error "]"
+   78    | ID . "(" error "}"
 
     "("  shift, and go to state 88
 
@@ -800,9 +797,9 @@ State 52
 State 53
 
    63 Exp: "(" . Exp ")"
-   76    | "(" . error ")"
-   77    | "(" . error "]"
-   78    | "(" . error "}"
+   73    | "(" . error ")"
+   74    | "(" . error "]"
+   75    | "(" . error "}"
 
     error    shift, and go to state 89
     "int"    shift, and go to state 48
@@ -898,10 +895,7 @@ State 60
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1054,7 +1048,7 @@ State 77
 
 State 78
 
-   83 Exp: error "+" . Exp
+   80 Exp: error "+" . Exp
 
     error    shift, and go to state 85
     "int"    shift, and go to state 48
@@ -1069,7 +1063,7 @@ State 78
 
 State 79
 
-   84 Exp: error "-" . Exp
+   81 Exp: error "-" . Exp
 
     error    shift, and go to state 85
     "int"    shift, and go to state 48
@@ -1084,7 +1078,7 @@ State 79
 
 State 80
 
-   85 Exp: error "*" . Exp
+   82 Exp: error "*" . Exp
 
     error    shift, and go to state 85
     "int"    shift, and go to state 48
@@ -1099,7 +1093,7 @@ State 80
 
 State 81
 
-   86 Exp: error "/" . Exp
+   83 Exp: error "/" . Exp
 
     error    shift, and go to state 85
     "int"    shift, and go to state 48
@@ -1164,10 +1158,10 @@ State 84
 
 State 85
 
-   83 Exp: error . "+" Exp
-   84    | error . "-" Exp
-   85    | error . "*" Exp
-   86    | error . "/" Exp
+   80 Exp: error . "+" Exp
+   81    | error . "-" Exp
+   82    | error . "*" Exp
+   83    | error . "/" Exp
 
     "+"  shift, and go to state 78
     "-"  shift, and go to state 79
@@ -1188,10 +1182,7 @@ State 86
    64    | "-" Exp .
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "*"  shift, and go to state 99
     "/"  shift, and go to state 100
@@ -1214,10 +1205,7 @@ State 87
    65    | "!" Exp .
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "."  shift, and go to state 106
     "["  shift, and go to state 107
@@ -1229,9 +1217,9 @@ State 88
 
    66 Exp: ID "(" . Args ")"
    67    | ID "(" . ")"
-   79    | ID "(" . error ")"
-   80    | ID "(" . error "]"
-   81    | ID "(" . error "}"
+   76    | ID "(" . error ")"
+   77    | ID "(" . error "]"
+   78    | ID "(" . error "}"
 
     error    shift, and go to state 124
     "int"    shift, and go to state 48
@@ -1248,13 +1236,13 @@ State 88
 
 State 89
 
-   76 Exp: "(" error . ")"
-   77    | "(" error . "]"
-   78    | "(" error . "}"
-   83    | error . "+" Exp
-   84    | error . "-" Exp
-   85    | error . "*" Exp
-   86    | error . "/" Exp
+   73 Exp: "(" error . ")"
+   74    | "(" error . "]"
+   75    | "(" error . "}"
+   80    | error . "+" Exp
+   81    | error . "-" Exp
+   82    | error . "*" Exp
+   83    | error . "/" Exp
 
     "+"  shift, and go to state 78
     "-"  shift, and go to state 79
@@ -1278,10 +1266,7 @@ State 90
    63    | "(" Exp . ")"
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1347,10 +1332,7 @@ State 94
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1516,10 +1498,7 @@ State 106
 State 107
 
    68 Exp: Exp "[" . Exp "]"
-   73    | Exp "[" . Exp ")"
-   74    | Exp "[" . Exp "}"
-   75    | Exp "[" . Exp ";"
-   82    | Exp "[" . error "]"
+   79    | Exp "[" . error "]"
 
     error    shift, and go to state 145
     "int"    shift, and go to state 48
@@ -1613,10 +1592,7 @@ State 116
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1651,18 +1627,15 @@ State 118
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
-   83    | error "+" Exp .
+   79    | Exp . "[" error "]"
+   80    | error "+" Exp .
 
     "*"  shift, and go to state 99
     "/"  shift, and go to state 100
     "."  shift, and go to state 106
     "["  shift, and go to state 107
 
-    $default  reduce using rule 83 (Exp)
+    $default  reduce using rule 80 (Exp)
 
 
 State 119
@@ -1677,18 +1650,15 @@ State 119
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
-   84    | error "-" Exp .
+   79    | Exp . "[" error "]"
+   81    | error "-" Exp .
 
     "*"  shift, and go to state 99
     "/"  shift, and go to state 100
     "."  shift, and go to state 106
     "["  shift, and go to state 107
 
-    $default  reduce using rule 84 (Exp)
+    $default  reduce using rule 81 (Exp)
 
 
 State 120
@@ -1703,16 +1673,13 @@ State 120
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
-   85    | error "*" Exp .
+   79    | Exp . "[" error "]"
+   82    | error "*" Exp .
 
     "."  shift, and go to state 106
     "["  shift, and go to state 107
 
-    $default  reduce using rule 85 (Exp)
+    $default  reduce using rule 82 (Exp)
 
 
 State 121
@@ -1727,16 +1694,13 @@ State 121
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
-   86    | error "/" Exp .
+   79    | Exp . "[" error "]"
+   83    | error "/" Exp .
 
     "."  shift, and go to state 106
     "["  shift, and go to state 107
 
-    $default  reduce using rule 86 (Exp)
+    $default  reduce using rule 83 (Exp)
 
 
 State 122
@@ -1758,13 +1722,13 @@ State 123
 
 State 124
 
-   79 Exp: ID "(" error . ")"
-   80    | ID "(" error . "]"
-   81    | ID "(" error . "}"
-   83    | error . "+" Exp
-   84    | error . "-" Exp
-   85    | error . "*" Exp
-   86    | error . "/" Exp
+   76 Exp: ID "(" error . ")"
+   77    | ID "(" error . "]"
+   78    | ID "(" error . "}"
+   80    | error . "+" Exp
+   81    | error . "-" Exp
+   82    | error . "*" Exp
+   83    | error . "/" Exp
 
     "+"  shift, and go to state 78
     "-"  shift, and go to state 79
@@ -1794,12 +1758,9 @@ State 126
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
-   87 Args: Exp . "," Args
-   88     | Exp .
+   79    | Exp . "[" error "]"
+   84 Args: Exp . "," Args
+   85     | Exp .
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1813,7 +1774,7 @@ State 126
     "."    shift, and go to state 106
     "["    shift, and go to state 107
 
-    $default  reduce using rule 88 (Args)
+    $default  reduce using rule 85 (Args)
 
 
 State 127
@@ -1825,23 +1786,23 @@ State 127
 
 State 128
 
-   76 Exp: "(" error ")" .
+   73 Exp: "(" error ")" .
 
-    $default  reduce using rule 76 (Exp)
+    $default  reduce using rule 73 (Exp)
 
 
 State 129
 
-   77 Exp: "(" error "]" .
+   74 Exp: "(" error "]" .
 
-    $default  reduce using rule 77 (Exp)
+    $default  reduce using rule 74 (Exp)
 
 
 State 130
 
-   78 Exp: "(" error "}" .
+   75 Exp: "(" error "}" .
 
-    $default  reduce using rule 78 (Exp)
+    $default  reduce using rule 75 (Exp)
 
 
 State 131
@@ -1865,10 +1826,7 @@ State 132
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1917,10 +1875,7 @@ State 134
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -1955,10 +1910,7 @@ State 136
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "*"  shift, and go to state 99
     "/"  shift, and go to state 100
@@ -1981,10 +1933,7 @@ State 137
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "*"  shift, and go to state 99
     "/"  shift, and go to state 100
@@ -2007,10 +1956,7 @@ State 138
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "."  shift, and go to state 106
     "["  shift, and go to state 107
@@ -2031,10 +1977,7 @@ State 139
    62    | Exp "/" Exp .
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "."  shift, and go to state 106
     "["  shift, and go to state 107
@@ -2055,10 +1998,7 @@ State 140
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -2087,10 +2027,7 @@ State 141
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"  shift, and go to state 97
     "-"  shift, and go to state 98
@@ -2115,10 +2052,7 @@ State 142
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -2144,10 +2078,7 @@ State 143
    62    | Exp . "/" Exp
    68    | Exp . "[" Exp "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   74    | Exp . "[" Exp "}"
-   75    | Exp . "[" Exp ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
@@ -2170,11 +2101,11 @@ State 144
 
 State 145
 
-   82 Exp: Exp "[" error . "]"
-   83    | error . "+" Exp
-   84    | error . "-" Exp
-   85    | error . "*" Exp
-   86    | error . "/" Exp
+   79 Exp: Exp "[" error . "]"
+   80    | error . "+" Exp
+   81    | error . "-" Exp
+   82    | error . "*" Exp
+   83    | error . "/" Exp
 
     "+"  shift, and go to state 78
     "-"  shift, and go to state 79
@@ -2196,28 +2127,19 @@ State 146
    68    | Exp . "[" Exp "]"
    68    | Exp "[" Exp . "]"
    69    | Exp . "." ID
-   73    | Exp . "[" Exp ")"
-   73    | Exp "[" Exp . ")"
-   74    | Exp . "[" Exp "}"
-   74    | Exp "[" Exp . "}"
-   75    | Exp . "[" Exp ";"
-   75    | Exp "[" Exp . ";"
-   82    | Exp . "[" error "]"
+   79    | Exp . "[" error "]"
 
     "+"    shift, and go to state 97
     "-"    shift, and go to state 98
     "*"    shift, and go to state 99
     "/"    shift, and go to state 100
-    ";"    shift, and go to state 158
     "="    shift, and go to state 102
     RELOP  shift, and go to state 103
     "&&"   shift, and go to state 104
     "||"   shift, and go to state 105
     "."    shift, and go to state 106
-    ")"    shift, and go to state 159
     "["    shift, and go to state 107
-    "]"    shift, and go to state 160
-    "}"    shift, and go to state 161
+    "]"    shift, and go to state 158
 
 
 State 147
@@ -2244,34 +2166,34 @@ State 148
     RETURN   shift, and go to state 56
 
     CompSt  go to state 57
-    Stmt    go to state 162
+    Stmt    go to state 159
     Exp     go to state 60
 
 
 State 149
 
-   79 Exp: ID "(" error ")" .
+   76 Exp: ID "(" error ")" .
 
-    $default  reduce using rule 79 (Exp)
+    $default  reduce using rule 76 (Exp)
 
 
 State 150
 
-   80 Exp: ID "(" error "]" .
+   77 Exp: ID "(" error "]" .
 
-    $default  reduce using rule 80 (Exp)
+    $default  reduce using rule 77 (Exp)
 
 
 State 151
 
-   81 Exp: ID "(" error "}" .
+   78 Exp: ID "(" error "}" .
 
-    $default  reduce using rule 81 (Exp)
+    $default  reduce using rule 78 (Exp)
 
 
 State 152
 
-   87 Args: Exp "," . Args
+   84 Args: Exp "," . Args
 
     error    shift, and go to state 85
     "int"    shift, and go to state 48
@@ -2282,7 +2204,7 @@ State 152
     "("      shift, and go to state 53
 
     Exp   go to state 126
-    Args  go to state 163
+    Args  go to state 160
 
 
 State 153
@@ -2310,7 +2232,7 @@ State 154
     RETURN   shift, and go to state 56
 
     CompSt  go to state 57
-    Stmt    go to state 164
+    Stmt    go to state 161
     Exp     go to state 60
 
 
@@ -2338,77 +2260,56 @@ State 156
     RETURN   shift, and go to state 56
 
     CompSt  go to state 57
-    Stmt    go to state 165
+    Stmt    go to state 162
     Exp     go to state 60
 
 
 State 157
 
-   82 Exp: Exp "[" error "]" .
+   79 Exp: Exp "[" error "]" .
 
-    $default  reduce using rule 82 (Exp)
+    $default  reduce using rule 79 (Exp)
 
 
 State 158
-
-   75 Exp: Exp "[" Exp ";" .
-
-    $default  reduce using rule 75 (Exp)
-
-
-State 159
-
-   73 Exp: Exp "[" Exp ")" .
-
-    $default  reduce using rule 73 (Exp)
-
-
-State 160
 
    68 Exp: Exp "[" Exp "]" .
 
     $default  reduce using rule 68 (Exp)
 
 
-State 161
-
-   74 Exp: Exp "[" Exp "}" .
-
-    $default  reduce using rule 74 (Exp)
-
-
-State 162
+State 159
 
    44 Stmt: error ")" Stmt ELSE Stmt .
 
     $default  reduce using rule 44 (Stmt)
 
 
-State 163
+State 160
 
-   87 Args: Exp "," Args .
+   84 Args: Exp "," Args .
 
-    $default  reduce using rule 87 (Args)
+    $default  reduce using rule 84 (Args)
 
 
-State 164
+State 161
 
    39 Stmt: IF "(" Exp ")" Stmt .
    40     | IF "(" Exp ")" Stmt . ELSE Stmt
 
-    ELSE  shift, and go to state 166
+    ELSE  shift, and go to state 163
 
     $default  reduce using rule 39 (Stmt)
 
 
-State 165
+State 162
 
    41 Stmt: WHILE "(" Exp ")" Stmt .
 
     $default  reduce using rule 41 (Stmt)
 
 
-State 166
+State 163
 
    40 Stmt: IF "(" Exp ")" Stmt ELSE . Stmt
 
@@ -2425,11 +2326,11 @@ State 166
     RETURN   shift, and go to state 56
 
     CompSt  go to state 57
-    Stmt    go to state 167
+    Stmt    go to state 164
     Exp     go to state 60
 
 
-State 167
+State 164
 
    40 Stmt: IF "(" Exp ")" Stmt ELSE Stmt .
 

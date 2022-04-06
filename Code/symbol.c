@@ -23,6 +23,11 @@ Type  Basic_Init(StNode *cur){
         return &type_float;
     }
 }
+Type Type_Init(int type){
+    Type ret;
+    ret = malloc(sizeof(struct Type_));
+    ret->kind = type;
+}
 Type  Struct_Init(){
     Type ret;
     ret = malloc(sizeof(struct Type_));
@@ -37,6 +42,7 @@ Type  Function_Init(StNode * cur, Type ret_type){
 }
 FieldList Field_Init(StNode * cur){
     // cur->name = 
+    return malloc(sizeof(struct FieldList_));
 }
 Symbol Symbol_Init(Type curtype, int symbol_kind){
    if(curtype == NULL) return;

@@ -1,7 +1,10 @@
 #include "hashtable.h"
 #include "debug.h"
 const int  TABLE_SIZE = 0X3fff;
+#define STACK_SIZE  20
+int Stack_top = 0;
 HashTable * SymbolTable;
+Symbol symbol_stack[STACK_SIZE] ;
 unsigned hash_pjw(char* name)
  {
  unsigned  val = 0, i;
@@ -25,6 +28,9 @@ HashTable *  HT_Init(){
 	  SymbolTable->ele_count = 0;
 	  for(int i = 0; i < TABLE_SIZE; i++)
 	  	SymbolTable->table[i] = NULL;
+		for(int i = 0 ;i < STACK_SIZE ; i++){
+			symbol_stack[i]=NULL; 
+		}
 	  return SymbolTable;
 }
 
