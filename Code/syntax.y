@@ -31,7 +31,7 @@ do                                                        \
       YYRHSLOC(Rhs,N).node -> siblings = NULL ;\
     }                                                     \
   else                                                    \
-    {                                                     \
+    {             \
       (Cur).first_line   = (Cur).last_line   =            \
         YYRHSLOC(Rhs, 0).last_line;                       \
       (Cur).first_column = (Cur).last_column =            \
@@ -39,7 +39,8 @@ do                                                        \
       (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
       (Cur).node->symbol =  yyr1[yyn];                   \
       (Cur).node->line_no = (Cur).first_line;           \
-      (Cur).node->is_empty = 1; \  
+      (Cur).node->is_empty = 1; \ 
+      (Cur).node->siblings = NULL;\ 
     }                                                     \
 while (0)
 %} 
@@ -136,13 +137,13 @@ Specifier  : TYPE
    | StructSpecifier
    ;
 
-StructSpecifier : STRUCT OptTag "{" DefList "}"
+StructSpecifier : STRUCT OptTag "{" DefList "}" {}
    | STRUCT OptTag "{"  error "}" {yyerrok;}
    | STRUCT error DefList "}" {yyerrok;}
    | STRUCT Tag
    ;
 
-OptTag : /* empty */
+OptTag : /* empty */ 
    | ID
    ;
 
@@ -245,7 +246,7 @@ Exp : Exp "=" Exp
    | error  "+"  Exp { yyerrok;}
    | error  "-"  Exp { yyerrok;}
    | error  "*"  Exp { yyerrok;}
-   | error  "/"  Exp { yyerrok;}
+| error  "/"  Exp { yyerrok;}
    ;
 
 Args : Exp "," Args

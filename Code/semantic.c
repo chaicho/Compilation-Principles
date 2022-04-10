@@ -8,19 +8,34 @@
 #include <stdarg.h>
 #include "debug.h"
 #define same(a,b) !strcmp(a,b)
-extern Type type_int;
-extern Type type_float;
+extern  Type type_int;
+extern  Type type_float;
+
+int errline = -1;
 int annoymous_cnt = 0 ;
 FieldList parse_DefList(StNode *cur);
 Type parse_Exp(StNode *);
 bool same_type(Type a, Type b);
 extern HashTable * SymbolTable;
 bool is_symbol = true;//表示当前是否要加入符号表
-void throwError(int ErrorType,int line_num);
+bool is_param = false;
+static inline void throwError(int ErrorType,int line_num);
 static inline bool CorrectNode(StNode * n, const char *name) {
- Assert(strcmp(n->name, name) == 0,"GG");
+ Assert(strcmp(n->name, name) == 0,"supposed:%s actual : %s",n->name,name);
 }
 
+void print_node(StNode *cur){
+    StNode * tmp =cur->child;
+    while (tmp!= NULL)
+    {
+        Log("%s %p",tmp->name,tmp->siblings);
+        if(tmp) printf("---->");
+        tmp = tmp->siblings;
+    }
+    printf("\n");
+    return;
+    
+}
 bool same_field(FieldList a, FieldList b,int type){
     bool ret = true;
     FieldList p_a = a;
@@ -69,7 +84,8 @@ bool IsProd(const StNode* cur, int num, ...) {
     bool ret = false;
     StNode* child = cur->child;
     char* required_name ;
-    for (int i = 0; i < num;  child = child->siblings ,i++) {
+    int i;
+    for ( i = 0; i < num;  child = child->siblings ,i++) {
         if (child == NULL) {
             break;
         }
@@ -78,7 +94,7 @@ bool IsProd(const StNode* cur, int num, ...) {
           break;
         }
     }
-    ret = (child == NULL);
+    ret = ((child == NULL) && i == num);
     va_end(valist);
     return ret;
 }
@@ -95,12 +111,14 @@ FieldList parse_Args(StNode * cur){
     }   
     else if(IsProd(cur, 1,"Exp")){
         FieldList ret = Field_Init(cur);
-        ret->type = parse_Args(nxt);
+        ret->type = parse_Exp(nxt);
+        print_type(ret->type,0);
         ret->tail = NULL;
         return ret;
     }
 }
 Type parse_Exp(StNode * cur){
+    if( cur == NULL || cur->is_empty ) return;
     CorrectNode(cur,"Exp");
     StNode *nxt = cur->child;
     Type ret = NULL;
@@ -108,6 +126,14 @@ Type parse_Exp(StNode * cur){
     if(IsProd(cur , 3 ,"Exp","ASSIGNOP","Exp")){
         Type a = parse_Exp(nxt);
         Type b = parse_Exp(nxt->siblings->siblings);
+        if( a == NULL){
+            throwError(1,cur->line_no);
+            return NULL;
+        }
+        if( a -> rval ){
+            throwError(6, cur->line_no);
+            return NULL;
+        }
         if(!same_type(a,b)){
             throwError(5,cur->line_no);
             return NULL;
@@ -115,15 +141,25 @@ Type parse_Exp(StNode * cur){
         ret = a;
         return ret;
     }
-    else if(IsProd(cur, 3, "Exp", "AND", "Exp") || IsProd(cur, 3, "Exp", "OR", "Exp") || IsProd(cur, 3, "Exp", "RELOP", "Exp")){
+    else if(IsProd(cur, 3, "Exp", "AND", "Exp") || IsProd(cur, 3, "Exp", "OR", "Exp") ){
         Type a = parse_Exp(nxt);
         Type b = parse_Exp(nxt->siblings->siblings);
         if(!same_type(a,b) || !same_type(a,type_int)){
             throwError(7,cur->line_no);
             return NULL;
         }
-        ret = Type_Init(BASIC);
-        ret->basic = INT;
+        ret = Int_Init();
+        ret->rval = true;
+        return ret;
+    }
+    else if(IsProd(cur, 3, "Exp", "RELOP", "Exp")){
+        Type a = parse_Exp(nxt);
+        Type b = parse_Exp(nxt->siblings->siblings);
+        if(!same_type(a,b)){
+            throwError(7,cur->line_no);
+            return NULL;
+        }
+        ret = Int_Init();
         ret->rval = true;
         return ret;
     }
@@ -144,79 +180,137 @@ Type parse_Exp(StNode * cur){
             throwError(7,cur->line_no);
             return NULL;
         }
-        ret = a;
-        return ret;
+        Type tmp_type = Type_Init(a->kind);
+        memcpy(tmp_type, a, sizeof(struct Type_));
+        tmp_type->rval =  true;
+        return tmp_type;
     }
     else if(IsProd(cur, 2, "MINUS", "Exp" )){
         if(!(tmp = parse_Exp(nxt->siblings))|| !same_type(tmp,type_int)){
             throwError(7,cur->line_no);
             return NULL;
         }
+        tmp ->rval = true;
         return tmp;
     }
     else if(IsProd(cur, 4, "ID","LP","Args","RP")){
-        Symbol cur_func = HT_Find(SymbolTable,nxt->name);
+        Symbol cur_func = HT_Find(SymbolTable,nxt->st_val.str_val);
         if(cur_func == NULL){
             throwError(2,cur->line_no);
+            return NULL;
+        }
+        else if(cur_func -> kind != SYM_FUNCTION){
+            throwError(11,cur->line_no);
             return NULL;
         }
         Type functype= cur_func->type;
         FieldList func_params = parse_Args(nxt->siblings->siblings);
         Type calledfunctype  = Type_Init(FUNCTION);
         calledfunctype->function.paramList = func_params;
+        
         if(!same_type(calledfunctype,functype)){
             throwError(9 , cur->line_no);
             return NULL;
         }
 
+        calledfunctype->rval = true;
         ret = functype->function.retType;
-        
         return ret;
     }
-    else if(IsProd(cur, 3,"ID" ,"Lp","RP")){
-
+    else if(IsProd(cur, 3,"ID" ,"LP","RP")){
+        Symbol tmp= NULL;
+        if(!(tmp =  HT_Find(SymbolTable,nxt->st_val.str_val))){
+            throwError(2 , cur->line_no);
+            return NULL;
+        }
+        else if(tmp->kind != SYM_FUNCTION){
+            throwError(11,cur->line_no);
+            return NULL;
+        }
+        return tmp->type->function.retType;
     }
     else if(IsProd(cur,4,"Exp", "LB","Exp","RB")){
+        Type first_type = parse_Exp(nxt);
+        Type second_type = parse_Exp(nxt->siblings->siblings);
+        if( first_type->kind != ARRAY){
+            // throwError();
+            throwError(10,cur->line_no);
+            return NULL;
+        }
+        if(!same_type(second_type,type_int)){
+            throwError(12,cur->line_no);
+            return NULL;
+        }
+        return first_type->array.elem;
 
     }
     else if(IsProd(cur,3,"Exp","DOT","ID")){
-
+        Type firsttype = parse_Exp(nxt);
+        if(firsttype->kind !=STRUCTURE){
+            throwError(13,cur->line_no);
+            return NULL;
+        }
+        char * id = nxt->siblings->siblings->st_val.str_val;
+        Log("id: %s",id);
+        FieldList curfield = firsttype->structure;
+        while (curfield!=NULL)
+        {
+            Log("%s",curfield->name);
+            if(same(curfield->name,id)){
+                return curfield->type;
+            }
+            curfield = curfield ->tail;
+        }
+        throwError(14,cur->line_no);
+        return NULL;
     }
     else if(IsProd(cur,1, "ID")){
-
+        Symbol cursymbol = HT_Find(SymbolTable,nxt->st_val.str_val);
+        if(!cursymbol){
+            throwError(1,cur->line_no);
+            return NULL;
+        }
+        else if(cursymbol->kind != SYM_VAR){
+            throwError(3,cur->line_no);
+            return NULL;
+        }
+        return cursymbol->type;
     }
     else if(IsProd(cur,1,"INT")){
-
+        return Int_Init();
     }
     else if(IsProd(cur,1, "FLOAT")){
-
+        Log("%p",type_float);
+        return Float_Init();
     }
 }
 
 FieldList parse_VarDec(StNode * cur, Type cur_type){
     if(cur == NULL || cur_type == NULL) return NULL;
     if(IsProd(cur,1, "ID")){
+        FieldList ret = NULL;
         if(HT_Find(SymbolTable,cur->child->st_val.str_val)){
-            throwError(3,cur->line_no);
+            if(is_param) throwError(15,cur->line_no);
+            else throwError(3,cur->line_no);
             return NULL;
         }
         if(is_symbol){
-            Symbol cur_symbol = malloc(sizeof(struct Symbol_));
-            cur_symbol->type = cur_type;
+            Symbol cur_symbol = Symbol_Init(cur_type, SYM_VAR);
             cur_symbol->name = cpstr(cur->child->st_val.str_val);
             Log("%s",cur_symbol->name);
             HT_Insert(SymbolTable,cur_symbol->name,cur_symbol);
-            // assert(0);
             assert(HT_Find(SymbolTable,cur_symbol->name));
-            return NULL;
+            ret = NULL;
         }
-        else{
+        if(!is_symbol || is_param) {
             FieldList cur_param = malloc(sizeof(struct FieldList_ ));
             cur_param->type =   cur_type;
             cur_param->name= cpstr(cur->child->st_val.str_val);
             cur_param->tail = NULL;
-            return cur_param;
+            ret = cur_param;
+            Log("%s",cur_param->name);
         }
+        return ret;
     }
     else if(IsProd(cur, 4,"VarDec","LB","INT","RB")){
         StNode * nxt  = cur->child;
@@ -248,22 +342,40 @@ Type parse_StructSpecifier(StNode *cur){
             throwError(17,cur->line_no); 
             return NULL;
         }
+        return targetStruct->type;
     }
     else if(IsProd(cur,5,"STRUCT","OptTag","LC","DefList","RC")){
         Type cur_type = Struct_Init();
-        is_symbol = false;
+        new_Scope();
+        is_param = true;
         cur_type->structure->tail = parse_DefList(nxt->siblings->siblings->siblings) ;
-        is_symbol = true;
-        if(nxt->siblings->child->is_empty){ 
+        is_param = false;
+        delete_Scope();
+        if(nxt->siblings->is_empty ){ 
             char tmp[100];
             sprintf(tmp,"Annoymous_dashkdkasj%d",annoymous_cnt++);
             cur_type->structure->name = cpstr(tmp);
         }   
         else{
             cur_type->structure->name = cpstr(nxt->siblings->child->st_val.str_val);
-            Log("%s",cur_type->structure->name);
         }
+
+        if(HT_Find(SymbolTable,cur_type->structure->name)){
+            Log("%s",cur_type->structure->name);
+            throwError(16,cur->line_no);
+            return;
+        }
+
+        Symbol new_struct =Symbol_Init(cur_type,SYM_STRUCT);
+        if(!new_struct) return; 
+        new_struct->name = cpstr(cur_type->structure->name);
+        new_struct->type = cur_type;
+        HT_Insert(SymbolTable,new_struct->name, new_struct);
+        
         return cur_type;
+    }
+    else {
+        print_node(cur);
     }
 }
 Type  parse_Specifier(StNode * cur){
@@ -275,7 +387,6 @@ Type  parse_Specifier(StNode * cur){
     cur_type = Basic_Init(spe);
   }
   else if(IsProd(cur , 1 , "StructSpecifier")){
-   
     cur_type = parse_StructSpecifier(cur->child);
   }
   else {
@@ -285,14 +396,28 @@ Type  parse_Specifier(StNode * cur){
 }
 FieldList parse_Dec(StNode *cur,Type curtype){
     if(cur == NULL || curtype == NULL) return NULL;
+    CorrectNode(cur,"Dec");
     StNode *nxt = cur->child;
     if(IsProd(cur,1,"VarDec")){
         return parse_VarDec(nxt,curtype);
     }
-    else if(IsProd(cur,3,"VarDec","ASSIGNOP","EXP")){
+    else if(IsProd(cur,3,"VarDec","ASSIGNOP","Exp")){
         //TODO()
+        if(is_param){
+            throwError(15,cur->line_no);
+            return  NULL;
+        }
+        Type assignedtype = parse_Exp(nxt->siblings->siblings);
+        if(!same_type(assignedtype,curtype)){
+            throwError(5,cur->line_no);
+        }
+        else if(curtype->rval){
+            throwError(6,cur->line_no);
+        }
         return parse_VarDec(nxt,curtype);
     }
+    // assert(0);
+
 }
 FieldList parse_DecList(StNode *cur, Type curtype){
     if(cur == NULL || curtype == NULL) return NULL;
@@ -312,25 +437,80 @@ FieldList parse_DecList(StNode *cur, Type curtype){
 FieldList parse_Def(StNode *cur){
     StNode *nxt= cur->child;
     Type curtype = parse_Specifier(nxt);
+    print_type(curtype,0);
     return parse_DecList(nxt->siblings,curtype);
 }
 FieldList parse_DefList(StNode *cur){
     if(cur == NULL || cur->is_empty) return NULL;
     StNode * nxt= cur->child;
     FieldList ret = parse_Def(nxt);
+    Log("%s",ret->name);
     FieldList nxt_field = parse_DefList(nxt->siblings);
     ConcatField(ret,nxt_field);
     return ret;
 }
+void parse_Stmt(StNode *cur, Type supposed_type){
+    if(cur == NULL ) return;
+    StNode * nxt = cur->child;
 
-void parse_StmtList(StNode *cur){
+    if(IsProd(cur, 2 , "Exp","SEMI")) {
+        parse_Exp(nxt);
+    }
+    else if(IsProd(cur, 1 ,"CompSt")){
+        parse_Compst(nxt, supposed_type);
+    }
+    else if(IsProd(cur, 3 , "RETURN","Exp","SEMI")){
+        Type returnedtype = parse_Exp(nxt->siblings);
+        // assert(returnedtype);
+        if(!same_type(supposed_type, returnedtype)){
+            throwError(8,cur->line_no);
+            return;
+        }
+        
+    }
+    else if(IsProd(cur,5,"IF","LP", "Exp","RP", "Stmt")){
+        Type logic_type = parse_Exp(nxt->siblings->siblings);
+        if(!same_type(logic_type,type_int)){
+            throwError(7,cur->line_no);
+        }
+        parse_Stmt(nxt->siblings->siblings->siblings->siblings,supposed_type);
+    }
+    else if(IsProd(cur,7,"IF","LP", "Exp","RP", "Stmt","ELSE","Stmt")){
+        Type logic_type = parse_Exp(nxt->siblings->siblings);
+        if(!same_type(logic_type,type_int)){
+            throwError(7,cur->line_no);
+        }
+        parse_Stmt(nxt->siblings->siblings->siblings->siblings,supposed_type);
+        parse_Stmt(nxt->siblings->siblings->siblings->siblings->siblings->siblings,supposed_type);
+        return;
+    }
+    else if(IsProd(cur, 5,"WHILE","LP","Exp","RP","Stmt")){
+        Type logic_type = parse_Exp(nxt->siblings->siblings);
+        if(!same_type(logic_type,type_int)){
+            throwError(7,cur->line_no);
+            return;
+        }
+        parse_Stmt(nxt->siblings->siblings->siblings->siblings,supposed_type);
 
+    }
 }
+
+void parse_StmtList(StNode * cur, Type cur_type){
+    if(cur == NULL || cur->is_empty) return;
+    StNode * nxt = cur->child;
+    parse_Stmt(nxt,cur_type);
+    parse_StmtList(nxt->siblings,cur_type);
+}
+
 void parse_Compst(StNode *cur, Type rettype){
         //TODO
-    Log("%s",cur->name);      
+    if(rettype == NULL) new_Scope();          
+
     StNode *nxt = cur->child;
-     
+    parse_DefList(nxt->siblings);
+    parse_StmtList(nxt->siblings->siblings,rettype);
+
+    delete_Scope();
 }
 FieldList parse_ParamDec(StNode *cur){
     StNode * nxt= cur->child;
@@ -357,16 +537,16 @@ Type parse_FunDec(StNode * cur, Type ret){
         throwError(4,cur->line_no);
         return NULL;
     }
-    is_symbol = false;
+    new_Scope();
+    is_param = true;
     FieldList paramlist = parse_VarList(id->siblings->siblings);
-    is_symbol = true;
-
+    is_param = false;
     //func 即代表函数的TYPE
     FieldList cur_param = paramlist;
     int param_cnt =  0;
     while (cur_param!=NULL)
-    {
-
+    {   
+        
         Log("%s",cur_param->name);
         cur_param = cur_param->tail;
         param_cnt++;
@@ -376,7 +556,8 @@ Type parse_FunDec(StNode * cur, Type ret){
     func->function.retType = ret; 
     func->function.paramNum = param_cnt;
     func->function.paramList = paramlist;
-}
+    func->rval = true;  
+}   
 void parse_ExtDef(StNode * cur){
     StNode * nxt= cur ->child ; 
     if(IsProd(cur, 3,"Specifier","ExtDecList","SEMI")){
@@ -394,13 +575,11 @@ void parse_ExtDef(StNode * cur){
         parse_Compst(nxt->siblings->siblings,rettype);
         
 
-
         Symbol cur_symbol = Symbol_Init(functype,SYM_FUNCTION);
         if(!cur_symbol) return;
         cur_symbol->name = cpstr(nxt->siblings->child->st_val.str_val);
         HT_Insert(SymbolTable,cur_symbol->name,cur_symbol);
-        print_type(functype,0);
-
+        // print_type(functype,0);
     }
     else if(IsProd(cur,2 ,"Specifier","SEMI")){
         Type structtype = parse_Specifier(nxt);
@@ -408,13 +587,9 @@ void parse_ExtDef(StNode * cur){
         if(structtype->kind != STRUCTURE){
             return;
         }
-        else {
-            Symbol new_struct =Symbol_Init(structtype,SYM_STRUCT);
-            if(!new_struct) return; 
-            new_struct->name = cpstr(structtype->structure->name);
-            new_struct->type = structtype;
-            HT_Insert(SymbolTable,new_struct->name, new_struct);
-        }
+    }
+    else{
+        assert(0);
     }
 }
 
@@ -432,25 +607,27 @@ void parse_tree(StNode * cur){
 
 char *err_message[] = {
   { "gg"  },
-  { "Undefined variable "  },
-  { "Undefined function "  },
-  { "Duplicate name "  },
-  { "Function redefinition" },
-  { "Mismatched type for = " },
-  { "Rvalue on the right of ="  },
-  { "Mismatched type for operands"  },
-  { "Mismatched type for return" },
+  { "Undefined variable"  },
+  { "Undefined function"  },
+  { "Redefined variable"  },
+  { "Redefined function" },
+  { "Type mismatched for assignment" },
+  { "The left-hand side of an assignment must be a varia-ble"  },
+  { "Type mismatched for operands"  },
+  { "Type mismatched for return" },
   { "Mismatched arguments function "  },
   { "Use [] on non-array variable"  },
   { "Use () on non-function variable "  },
   { "Non-int inside []"  },
-  { "Use . on non-struct variable"  },
+  { "Illegal use of \".\""  },
   { "Access to undefined fieldlist in sturct "},
   { "Redefinition or initialization of fieldlsit " },
   { "Duplicated struct name with prior struct or variable  " },
   { "Use of undefined sturct name"}
 };
 
-void throwError(int type,int line_num){
+static inline void throwError(int type,int line_num){
+   if(errline == line_num) return;
+   else errline = line_num;
    printf("Error type %d at Line %d: %s.\n",type,line_num,err_message[type]);
 }

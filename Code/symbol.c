@@ -4,23 +4,36 @@
 #define same(a,b) !strcmp(a,b)
 char *type_name[] = {"BASIC", "ARRAY", "STRUCTURE","FUNCTION"};
 extern HashTable  SymbolTable;
-struct Type_ type_int ={
+struct Type_ Type_int ={
   .kind  =  BASIC,
-  .basic =  TYPE_INT
+  .basic =  TYPE_INT,
+  .rval = 1
 };
-struct  Type_ type_float = 
+struct  Type_ Type_float = 
 {
   .kind = BASIC,
-  .basic = TPYE_FLOAT
+  .basic = TPYE_FLOAT,
+  .rval = 1
 };
-
+Type type_int = &Type_int;
+Type type_float = &Type_float;
+Type Int_Init(){
+  Type ret = Type_Init(BASIC);
+  ret->basic = TYPE_INT;
+  return ret;  
+}
+Type  Float_Init(){
+  Type ret = Type_Init(BASIC);
+  ret->basic = TPYE_FLOAT;
+  return ret;  
+}
 Type  Basic_Init(StNode *cur){
     Log("%s",cur->st_val.str_val);
     if(!strcmp(cur->st_val.str_val ,"int"))  {
-        return &type_int;
+        return Int_Init();
     }
     else if(!strcmp(cur->st_val.str_val, "float")) {
-        return &type_float;
+        return Float_Init();
     }
 }
 Type Type_Init(int type){
@@ -49,7 +62,8 @@ Symbol Symbol_Init(Type curtype, int symbol_kind){
    Symbol ret =malloc(sizeof(struct Symbol_));
    ret->kind = symbol_kind;
    ret->type = curtype;
-
+   // 将当前symbol连上
+   return ret;
 }
 void print_type(Type t,int depth ){
   

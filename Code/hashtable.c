@@ -2,9 +2,11 @@
 #include "debug.h"
 const int  TABLE_SIZE = 0X3fff;
 #define STACK_SIZE  20
+
 int Stack_top = 0;
 HashTable * SymbolTable;
-Symbol symbol_stack[STACK_SIZE] ;
+Symbol scope_stack[STACK_SIZE];
+
 unsigned hash_pjw(char* name)
  {
  unsigned  val = 0, i;
@@ -15,7 +17,13 @@ unsigned hash_pjw(char* name)
  }
  return val;
 }
+Symbol get_stacktop(){
+		return scope_stack[Stack_top];
+}
 
+void set_stacktop(Symbol a ){
+	 scope_stack[Stack_top] = a;
+}
 
 HashTable *  HT_Init(){  
 		SymbolTable = malloc(sizeof(HashTable));
@@ -25,11 +33,12 @@ HashTable *  HT_Init(){
       assert(0);
 	  }
 	  SymbolTable->ele_max = TABLE_SIZE;
+		Log("%d",SymbolTable->ele_max)	;
 	  SymbolTable->ele_count = 0;
 	  for(int i = 0; i < TABLE_SIZE; i++)
 	  	SymbolTable->table[i] = NULL;
 		for(int i = 0 ;i < STACK_SIZE ; i++){
-			symbol_stack[i]=NULL; 
+			scope_stack[i] = NULL; 
 		}
 	  return SymbolTable;
 }
@@ -38,11 +47,16 @@ void* HT_Insert(HashTable * hasht, char* key, Symbol data)
 {
 	if(data == NULL)
 		return NULL;
+
+	Symbol curtop = get_stacktop();
+  data->next = curtop;
+  set_stacktop(data);
+
 	unsigned h = hash_pjw(key) % (hasht->ele_max);
 	HashElem * cur = malloc(sizeof(HashElem));
   cur->key = malloc(strlen(key) + 1);
 	strcpy(cur->key, key);
-	Log("Insert : %s",cur->key);
+	Log("Insert : %s to %d",cur->key,h);
 	cur->data = data;
 	hasht->ele_count ++;
   cur->next = hasht->table[h];
@@ -68,7 +82,9 @@ Symbol HT_Find(HashTable * hasht, char* key)
 void HT_Remove(HashTable* hasht, char* key)
 {
 	unsigned h = hash_pjw(key) % hasht->ele_max;
+	Log("Delete :  %s",key);
 	HashElem * cur = hasht->table[h];
+	// Assert(cur,"%s SLOT %d",key,h);
 	HashElem * prev = NULL;
 	while(cur != NULL)
 	{
@@ -85,9 +101,31 @@ void HT_Remove(HashTable* hasht, char* key)
       free(cur);
 			cur = NULL;
 			hasht->ele_count --;
+			return;
 		}
 		prev = cur;
 		cur = cur->next;
 	}
+
+}
+
+void new_Scope(){
+		Log("Enter new scope");
+		Stack_top++;
+		scope_stack[Stack_top] = NULL;
+}
+void delete_Scope(){
+	 	Log("Begin Delete");
+		Symbol cur = scope_stack[Stack_top];
+		while (cur)
+		{
+			  Log("remove %s",cur->name);
+				HT_Remove(SymbolTable,cur->name);
+				cur = cur->next;
+		}
+		scope_stack[Stack_top] =  NULL;
+		Stack_top--;
+		Log("End Delete");
+		// assert(0);
 }
 

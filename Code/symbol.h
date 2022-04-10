@@ -51,5 +51,6 @@ Symbol Symbol_Init(Type curtype, int symbol_kind);
 void print_type(Type,int);
 void ConcatField(FieldList cur,FieldList nxt);
 Type Type_Init(int kind);
-
+Type Int_Init();
+Type Float_Init();
 #endif

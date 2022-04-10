@@ -20,5 +20,8 @@ HashTable * HT_Init( );
 void* HT_Insert(HashTable * hasht, char* key, Symbol data);
 Symbol HT_Find(HashTable * hasht, char* key);
 void HT_Remove(HashTable* hasht, char* key);
-
+Symbol get_stacktop();
+void set_stacktop(Symbol);
+void delete_Scope();
+void new_Scope();
 #endif

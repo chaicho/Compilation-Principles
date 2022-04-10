@@ -100,7 +100,7 @@ do                                                        \
       YYRHSLOC(Rhs,N).node -> siblings = NULL ;\
     }                                                     \
   else                                                    \
-    {                                                     \
+    {             \
       (Cur).first_line   = (Cur).last_line   =            \
         YYRHSLOC(Rhs, 0).last_line;                       \
       (Cur).first_column = (Cur).last_column =            \
@@ -108,11 +108,12 @@ do                                                        \
       (Cur).node = st_NodeInit(yytname[yyr1[yyn]]);       \
       (Cur).node->symbol =  yyr1[yyn];                   \
       (Cur).node->line_no = (Cur).first_line;           \
-      (Cur).node->is_empty = 1; \  
+      (Cur).node->is_empty = 1; \ 
+      (Cur).node->siblings = NULL;\ 
     }                                                     \
 while (0)
 
-#line 116 "./syntax.tab.c"
+#line 117 "./syntax.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -155,7 +156,7 @@ while (0)
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 50 "./syntax.y"
+#line 51 "./syntax.y"
 
   #define YYLTYPE YYLTYPE
   typedef struct YYLTYPE
@@ -168,7 +169,7 @@ extern int yydebug;
     struct StNode * node;
   } YYLTYPE;
 
-#line 172 "./syntax.tab.c"
+#line 173 "./syntax.tab.c"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -210,14 +211,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 63 "./syntax.y"
+#line 64 "./syntax.y"
  
    int int_val; 
    float float_val; 
    int relop_val ;
    char *str_val; 
 
-#line 221 "./syntax.tab.c"
+#line 222 "./syntax.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -612,15 +613,15 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   115,   115,   118,   119,   122,   123,   124,   125,   126,
-     127,   130,   131,   135,   136,   139,   140,   141,   142,   145,
-     146,   149,   155,   156,   157,   160,   161,   162,   163,   166,
-     167,   171,   177,   178,   179,   182,   183,   186,   187,   188,
-     189,   190,   191,   192,   193,   194,   195,   196,   202,   203,
-     206,   207,   210,   211,   214,   215,   220,   221,   222,   223,
-     224,   225,   226,   227,   228,   229,   230,   231,   232,   233,
-     234,   235,   236,   237,   238,   239,   240,   241,   242,   243,
-     244,   245,   246,   247,   248,   251,   252
+       0,   116,   116,   119,   120,   123,   124,   125,   126,   127,
+     128,   131,   132,   136,   137,   140,   141,   142,   143,   146,
+     147,   150,   156,   157,   158,   161,   162,   163,   164,   167,
+     168,   172,   178,   179,   180,   183,   184,   187,   188,   189,
+     190,   191,   192,   193,   194,   195,   196,   197,   203,   204,
+     207,   208,   211,   212,   215,   216,   221,   222,   223,   224,
+     225,   226,   227,   228,   229,   230,   231,   232,   233,   234,
+     235,   236,   237,   238,   239,   240,   241,   242,   243,   244,
+     245,   246,   247,   248,   249,   252,   253
 };
 #endif
 
@@ -1649,169 +1650,175 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 115 "./syntax.y"
+#line 116 "./syntax.y"
                      {root = (yyloc).node;}
-#line 1655 "./syntax.tab.c"
+#line 1656 "./syntax.tab.c"
     break;
 
   case 8:
-#line 125 "./syntax.y"
+#line 126 "./syntax.y"
                   { yyerrok; }
-#line 1661 "./syntax.tab.c"
+#line 1662 "./syntax.tab.c"
     break;
 
   case 9:
-#line 126 "./syntax.y"
+#line 127 "./syntax.y"
                           { yyerrok;}
-#line 1667 "./syntax.tab.c"
+#line 1668 "./syntax.tab.c"
     break;
 
   case 10:
-#line 127 "./syntax.y"
+#line 128 "./syntax.y"
                { yyerrok; }
-#line 1673 "./syntax.tab.c"
+#line 1674 "./syntax.tab.c"
+    break;
+
+  case 15:
+#line 140 "./syntax.y"
+                                                {}
+#line 1680 "./syntax.tab.c"
     break;
 
   case 16:
-#line 140 "./syntax.y"
+#line 141 "./syntax.y"
                                   {yyerrok;}
-#line 1679 "./syntax.tab.c"
+#line 1686 "./syntax.tab.c"
     break;
 
   case 17:
-#line 141 "./syntax.y"
+#line 142 "./syntax.y"
                               {yyerrok;}
-#line 1685 "./syntax.tab.c"
+#line 1692 "./syntax.tab.c"
     break;
 
   case 24:
-#line 157 "./syntax.y"
+#line 158 "./syntax.y"
                         {yyerrok;}
-#line 1691 "./syntax.tab.c"
+#line 1698 "./syntax.tab.c"
     break;
 
   case 26:
-#line 161 "./syntax.y"
+#line 162 "./syntax.y"
                       { yyerrok;}
-#line 1697 "./syntax.tab.c"
+#line 1704 "./syntax.tab.c"
     break;
 
   case 33:
-#line 178 "./syntax.y"
+#line 179 "./syntax.y"
                { yyerrok;}
-#line 1703 "./syntax.tab.c"
+#line 1710 "./syntax.tab.c"
     break;
 
   case 34:
-#line 179 "./syntax.y"
+#line 180 "./syntax.y"
                                     {yyerrok;}
-#line 1709 "./syntax.tab.c"
+#line 1716 "./syntax.tab.c"
     break;
 
   case 43:
-#line 192 "./syntax.y"
+#line 193 "./syntax.y"
                  {yyerrok;}
-#line 1715 "./syntax.tab.c"
+#line 1722 "./syntax.tab.c"
     break;
 
   case 44:
-#line 193 "./syntax.y"
+#line 194 "./syntax.y"
                                            {yyerrok;}
-#line 1721 "./syntax.tab.c"
+#line 1728 "./syntax.tab.c"
     break;
 
   case 45:
-#line 194 "./syntax.y"
+#line 195 "./syntax.y"
                                  {yyerrok;}
-#line 1727 "./syntax.tab.c"
+#line 1734 "./syntax.tab.c"
     break;
 
   case 46:
-#line 195 "./syntax.y"
+#line 196 "./syntax.y"
                        {yyerrok;}
-#line 1733 "./syntax.tab.c"
+#line 1740 "./syntax.tab.c"
     break;
 
   case 47:
-#line 196 "./syntax.y"
+#line 197 "./syntax.y"
                              {yyerrok;}
-#line 1739 "./syntax.tab.c"
+#line 1746 "./syntax.tab.c"
     break;
 
   case 51:
-#line 207 "./syntax.y"
+#line 208 "./syntax.y"
                          {yyerrok;}
-#line 1745 "./syntax.tab.c"
+#line 1752 "./syntax.tab.c"
     break;
 
   case 74:
-#line 238 "./syntax.y"
+#line 239 "./syntax.y"
                    { yyerrok; }
-#line 1751 "./syntax.tab.c"
+#line 1758 "./syntax.tab.c"
     break;
 
   case 75:
-#line 239 "./syntax.y"
+#line 240 "./syntax.y"
                   { yyerrok; }
-#line 1757 "./syntax.tab.c"
+#line 1764 "./syntax.tab.c"
     break;
 
   case 76:
-#line 240 "./syntax.y"
+#line 241 "./syntax.y"
                   { yyerrok; }
-#line 1763 "./syntax.tab.c"
+#line 1770 "./syntax.tab.c"
     break;
 
   case 77:
-#line 241 "./syntax.y"
+#line 242 "./syntax.y"
                      { yyerrok;}
-#line 1769 "./syntax.tab.c"
+#line 1776 "./syntax.tab.c"
     break;
 
   case 78:
-#line 242 "./syntax.y"
+#line 243 "./syntax.y"
                      { yyerrok;}
-#line 1775 "./syntax.tab.c"
+#line 1782 "./syntax.tab.c"
     break;
 
   case 79:
-#line 243 "./syntax.y"
+#line 244 "./syntax.y"
                      { yyerrok;}
-#line 1781 "./syntax.tab.c"
+#line 1788 "./syntax.tab.c"
     break;
 
   case 80:
-#line 244 "./syntax.y"
+#line 245 "./syntax.y"
                       { yyerrok;}
-#line 1787 "./syntax.tab.c"
+#line 1794 "./syntax.tab.c"
     break;
 
   case 81:
-#line 245 "./syntax.y"
+#line 246 "./syntax.y"
                      { yyerrok;}
-#line 1793 "./syntax.tab.c"
+#line 1800 "./syntax.tab.c"
     break;
 
   case 82:
-#line 246 "./syntax.y"
+#line 247 "./syntax.y"
                      { yyerrok;}
-#line 1799 "./syntax.tab.c"
+#line 1806 "./syntax.tab.c"
     break;
 
   case 83:
-#line 247 "./syntax.y"
+#line 248 "./syntax.y"
                      { yyerrok;}
-#line 1805 "./syntax.tab.c"
+#line 1812 "./syntax.tab.c"
     break;
 
   case 84:
-#line 248 "./syntax.y"
-                     { yyerrok;}
-#line 1811 "./syntax.tab.c"
+#line 249 "./syntax.y"
+                  { yyerrok;}
+#line 1818 "./syntax.tab.c"
     break;
 
 
-#line 1815 "./syntax.tab.c"
+#line 1822 "./syntax.tab.c"
 
       default: break;
     }
@@ -2049,7 +2056,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 255 "./syntax.y"
+#line 256 "./syntax.y"
  
 #include "lex.yy.c"
 void yyerror(char* msg) { 
