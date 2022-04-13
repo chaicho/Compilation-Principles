@@ -51,7 +51,7 @@ void* HT_Insert(HashTable * hasht, char* key, Symbol data)
 	Symbol curtop = get_stacktop();
   data->next = curtop;
   set_stacktop(data);
-
+	data->depth = Stack_top;
 	unsigned h = hash_pjw(key) % (hasht->ele_max);
 	HashElem * cur = malloc(sizeof(HashElem));
   cur->key = malloc(strlen(key) + 1);

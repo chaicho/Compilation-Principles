@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>stm
 #include"ast.h"
 #include "debug.h"
 #include "semantic.h"
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     yydebug = 1;
     yyparse(); 
     if(errlineno ==  -1 ) {
-        st_PrintTree(root , 0 );
+        // st_PrintTree(root , 0 );
         parse_tree(root);
         // assert(0);
     }

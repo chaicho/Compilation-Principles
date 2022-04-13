@@ -11,7 +11,6 @@ typedef struct Symbol_* Symbol;
  struct Type_
 {
   enum { BASIC, ARRAY, STRUCTURE , FUNCTION  } kind;
-  int rval;
   union
   {
   // 基本类型
@@ -24,7 +23,10 @@ typedef struct Symbol_* Symbol;
   struct {  
     Type  retType; 
     int paramNum; 
-    FieldList paramList; } function;
+    FieldList paramList; 
+    int line_no;
+    int defined;
+    } function;
   };
 
 };
@@ -41,7 +43,8 @@ struct Symbol_
    char * name;
    enum{SYM_STRUCT,SYM_FUNCTION,SYM_VAR} kind;
    Symbol  next;
-   Type  type;
+   struct Type_ const * type;
+   int depth;
 };
 Type Basic_Init(StNode * );
 Type Struct_Init();

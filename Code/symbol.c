@@ -7,13 +7,11 @@ extern HashTable  SymbolTable;
 struct Type_ Type_int ={
   .kind  =  BASIC,
   .basic =  TYPE_INT,
-  .rval = 1
 };
 struct  Type_ Type_float = 
 {
   .kind = BASIC,
   .basic = TPYE_FLOAT,
-  .rval = 1
 };
 Type type_int = &Type_int;
 Type type_float = &Type_float;
@@ -55,10 +53,12 @@ Type  Function_Init(StNode * cur, Type ret_type){
 }
 FieldList Field_Init(StNode * cur){
     // cur->name = 
-    return malloc(sizeof(struct FieldList_));
+    FieldList ret= malloc(sizeof(struct FieldList_));
+    ret->tail = NULL;
+    return ret;
 }
 Symbol Symbol_Init(Type curtype, int symbol_kind){
-   if(curtype == NULL) return;
+
    Symbol ret =malloc(sizeof(struct Symbol_));
    ret->kind = symbol_kind;
    ret->type = curtype;
@@ -66,12 +66,22 @@ Symbol Symbol_Init(Type curtype, int symbol_kind){
    return ret;
 }
 void print_type(Type t,int depth ){
-  
+  #ifndef DEBUG
+  return;
+  #endif
   printf("TYPE: %s",type_name[t->kind]);
   switch (t->kind)
   {
   case  BASIC:
-  
+    if(t->basic == TYPE_INT){
+      printf("INT\n");
+    }
+    else if(t->basic == TPYE_FLOAT){
+      printf("Float\n");
+    }
+    else{
+      assert(0);
+    }
     break;
   case  STRUCTURE:{ 
     printf(" name : %s",t->structure->name);
@@ -101,17 +111,23 @@ void print_type(Type t,int depth ){
       cur = cur->tail;
     }
     break;
+  case ARRAY:
+      printf("%d elements with type\n",t->array.size);
+      print_type(t->array.elem,depth+1);
   default:
     break;
   }
   if(depth == 0) printf("\n");
 }
 void ConcatField(FieldList cur,FieldList nxt){
-  if(!cur) return;
+  if(!cur){
+    return;
+  }
   FieldList tmp = cur;
   while (tmp->tail)
   {
     tmp = tmp->tail ;
+    assert(tmp!=tmp->tail);
   }
   tmp->tail = nxt;
   return;

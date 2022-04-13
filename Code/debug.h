@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 #define Log(format, ...) \

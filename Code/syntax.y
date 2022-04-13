@@ -123,6 +123,7 @@ ExtDefList :  /* empty */
 ExtDef :  Specifier ExtDecList ";"
    | Specifier  ";" 
    | Specifier FunDec CompSt
+   | Specifier FunDec ";" {}
    | error CompSt { yyerrok; }
    | error ExtDecList ";" { yyerrok;}
    | error ";" { yyerrok; }
@@ -221,7 +222,7 @@ Dec : VarDec
 Exp : Exp "=" Exp
    | Exp "&&" Exp
    | Exp "||" Exp
-   | Exp RELOP Exp
+   | Exp RELOP Exp 
    | Exp "+" Exp
    | Exp "-" Exp
    | Exp "*" Exp
