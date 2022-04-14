@@ -56,7 +56,6 @@ void* HT_Insert(HashTable * hasht, char* key, Symbol data)
 	HashElem * cur = malloc(sizeof(HashElem));
   cur->key = malloc(strlen(key) + 1);
 	strcpy(cur->key, key);
-	Log("Insert : %s to %d",cur->key,h);
 	cur->data = data;
 	hasht->ele_count ++;
   cur->next = hasht->table[h];

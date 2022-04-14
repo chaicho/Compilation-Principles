@@ -486,7 +486,7 @@ FieldList parse_DecList(StNode *cur, Type curtype,int type){
 FieldList parse_Def(StNode *cur,int type){
     StNode *nxt= cur->child;
     Type curtype = parse_Specifier(nxt);
-    print_type(curtype,0);
+    // print_type(curtype,0);
     FieldList tmp = parse_DecList(nxt->siblings,curtype , type);
     return tmp;
 }
@@ -580,11 +580,11 @@ Type parse_FunDec(StNode * cur, Type ret){
     Symbol curfunc = HT_Find(SymbolTable ,id->st_val.str_val); 
     if(curfunc && curfunc->type->function.defined){
         throwError(4,cur->line_no);
-        return NULL;
     }
     else if(!curfunc){
         curfunc = Symbol_Init(NULL,SYM_FUNCTION);
         curfunc->name = cpstr(id->st_val.str_val);
+        curfunc->type = NULL; 
         HT_Insert(SymbolTable,curfunc->name,curfunc);
     }
     new_Scope();
@@ -609,8 +609,9 @@ Type parse_FunDec(StNode * cur, Type ret){
     
     if(curfunc->type && !same_type(func,curfunc->type)){
             // assert(0);
-            throwError(19,cur->line_no);
-            return NULL;
+        print_type(curfunc->type,0);
+        print_type(func,0);
+        throwError(19,cur->line_no);
     }
     if(!curfunc->type){
          curfunc->type = func;
@@ -635,8 +636,8 @@ void parse_ExtDef(StNode * cur){
         
         parse_Compst(nxt->siblings->siblings,rettype,SYM_FUNCTION);
         delete_Scope();
-
         functype->function.defined = true;
+
 
     }
     else if(IsProd(cur,2 ,"Specifier","SEMI")){
@@ -651,6 +652,7 @@ void parse_ExtDef(StNode * cur){
         //进行解析
         Type rettype = parse_Specifier(nxt);
         Type functype = parse_FunDec(nxt->siblings,rettype);
+        delete_Scope();
         if(functype == NULL){
             return;
         }
@@ -710,5 +712,5 @@ char *err_message[] = {
 static inline void throwError(int type,int line_num){
    if(errline == line_num) return;
    else errline = line_num;
-   printf("Error Type %d at Line %d: %s.\n",type,line_num,err_message[type]);
+   printf("Error type %d at Line %d: %s.\n",type,line_num,err_message[type]);
 }
