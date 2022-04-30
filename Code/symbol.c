@@ -4,6 +4,34 @@
 #define same(a,b) !strcmp(a,b)
 char *type_name[] = {"BASIC", "ARRAY", "STRUCTURE","FUNCTION"};
 extern HashTable  SymbolTable;
+int structure_cnt =  0;
+int parent[1000020];
+int siz[1000020];
+void set_make(int i){
+    parent[i] = i;
+    siz[i] = 1;
+    return;
+}
+int set_find(int i){
+    if(parent[i]==i)
+        return i;
+    else
+        return parent[i] = set_find(parent[i]);
+}
+void set_union(int i,int j){
+    int a = set_find(i);
+    int b = set_find(j);
+    if(a!=b){
+        if(siz[b]<siz[a]) {
+          int tmp = a;
+          a = b;
+          b = tmp;
+        }
+        parent[a] = b;
+        siz[b] += siz[a];
+    }
+    return;
+}
 struct Type_ Type_int ={
   .kind  =  BASIC,
   .basic =  TYPE_INT,
@@ -44,6 +72,8 @@ Type  Struct_Init(){
     ret = malloc(sizeof(struct Type_));
     ret->kind = STRUCTURE;
     ret->structure = malloc(sizeof(struct FieldList_));
+    set_make(structure_cnt); 
+    ret->type_num = structure_cnt++;
     return ret;
 }
 Type  Function_Init(StNode * cur, Type ret_type){

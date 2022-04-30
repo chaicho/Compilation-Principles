@@ -11,6 +11,7 @@ typedef struct Symbol_* Symbol;
  struct Type_
 {
   enum { BASIC, ARRAY, STRUCTURE , FUNCTION  } kind;
+  int type_num;
   union
   {
   // 基本类型
@@ -56,4 +57,6 @@ void ConcatField(FieldList cur,FieldList nxt);
 Type Type_Init(int kind);
 Type Int_Init();
 Type Float_Init();
+int set_find(int);
+void set_union(int,int);
 #endif

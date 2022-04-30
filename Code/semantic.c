@@ -13,6 +13,7 @@ extern  Type type_float;
 extern int Stack_top;
 int errline = -1;
 int annoymous_cnt = 0 ;
+bool right_defined = true;
 FieldList parse_DefList(StNode *cur,int type);
 Type parse_Exp(StNode *);
 bool same_type(Type a, Type b);
@@ -75,9 +76,13 @@ bool same_type(Type a, Type b){
         return same_type(a->array.elem,b->array.elem);
     }
     else if(a->kind == STRUCTURE){
+        if(a==b) return true;
+        if(set_find(a->type_num) == set_find(b->type_num)) return true;
         FieldList p_a = a->structure;
         FieldList p_b = b->structure;
-        return same_field( p_a->tail , p_b->tail , STRUCTURE);
+        bool ret =  same_field( p_a->tail , p_b->tail , STRUCTURE);
+        if(ret) set_union(a->type_num,b->type_num);
+        return ret;
     }
     else if(a->kind == FUNCTION){
         return same_type(a->function.retType,b->function.retType) && same_field(a->function.paramList, b->function.paramList,FUNCTION) ;
@@ -268,7 +273,7 @@ Type parse_Exp(StNode * cur){
     }
     else if(IsProd(cur,3,"Exp","DOT","ID")){
         Type firsttype = parse_Exp(nxt);
-        if(firsttype == NULL) {
+        if(firsttype == NULL ) {
             return NULL;
         }
         char * id = nxt->siblings->siblings->st_val.str_val;
@@ -277,28 +282,27 @@ Type parse_Exp(StNode * cur){
             throwError(13,cur->line_no);
             return NULL;
         }
-        
-        FieldList curfield = firsttype->structure;
+        FieldList curfield = firsttype->structure->tail;
         while (curfield!=NULL)
         {
+            // print_type(curfield->type,0);
             if(same(curfield->name,id)){
-                print_type(curfield->type,0);
+                // printf("%s\n",curfield->name);
+                // assert(0);
                 return curfield->type;
             }
             curfield = curfield ->tail;
         }
+        // assert(0);
         throwError(14,cur->line_no);
         return NULL;
     }
     else if(IsProd(cur,1, "ID")){
         Symbol cursymbol = HT_Find(SymbolTable,nxt->st_val.str_val);
-        if(!cursymbol){
+        if(!cursymbol || (cursymbol ->kind == SYM_STRUCT)){
             Log("%s",nxt->st_val.str_val);
+            // printf("%s\n",nxt->st_val.str_val);
             throwError(1,cur->line_no);
-            return NULL;
-        }
-        else if(cursymbol->kind != SYM_VAR ){
-            throwError(3,cur->line_no);
             return NULL;
         }
         return cursymbol->type;
@@ -317,15 +321,16 @@ Type parse_Exp(StNode * cur){
         assert(0);
     }
 }
+Type final_type ;
 FieldList parse_VarDec(StNode * cur, Type cur_type,int type){
-    if(cur == NULL || cur_type == NULL) return NULL;
+    if(cur == NULL ) return NULL;
     
     if(IsProd(cur,1, "ID")){
-        Log("gg");
+        final_type = cur_type;
         FieldList ret = NULL;
         Symbol cursymbol = HT_Find(SymbolTable,cur->child->st_val.str_val);
         if(cursymbol){
-            if(cursymbol->kind == SYM_STRUCT || cursymbol-> kind == SYM_FUNCTION){
+            if(cursymbol->kind == SYM_STRUCT ){
                 throwError(3,cur ->line_no);
                 return NULL;
             }
@@ -333,13 +338,15 @@ FieldList parse_VarDec(StNode * cur, Type cur_type,int type){
                 if(cursymbol->depth == Stack_top){
                     if(type == SYM_STRUCT) throwError(15,cur->line_no);
                     else if(type == SYM_FUNCTION) throwError(3,cur->line_no);
+                    else throwError(3,cur->line_no);
+                    return NULL;
                 }
-                return NULL;
             }
         }
         Symbol cur_symbol = Symbol_Init(cur_type, SYM_VAR);
         cur_symbol->name = cpstr(cur->child->st_val.str_val);
         HT_Insert(SymbolTable,cur_symbol->name,cur_symbol);
+        
         assert(HT_Find(SymbolTable,cur_symbol->name));
         // printf("%s :  %d\n",cur->child->st_val.str_val , cur_symbol->type->rval);
         if(type == SYM_FUNCTION || type == SYM_STRUCT) {
@@ -359,6 +366,7 @@ FieldList parse_VarDec(StNode * cur, Type cur_type,int type){
         array_type->array.elem = cur_type;
         array_type->array.size = nxt->siblings->siblings->st_val.int_val;
         return parse_VarDec(nxt,array_type,type);
+ 
     }
 }
 FieldList parse_ExtDecList(StNode * cur, Type cur_type,int type ){
@@ -378,7 +386,7 @@ Type parse_StructSpecifier(StNode *cur){
     StNode *nxt = cur->child;
     if(IsProd(cur,2,"STRUCT","Tag")){
         Symbol targetStruct = HT_Find(SymbolTable,nxt->siblings->child->st_val.str_val);
-        if(!targetStruct){
+        if(!targetStruct || !(targetStruct->type)){
             throwError(17,cur->line_no); 
             return NULL;
         }
@@ -386,9 +394,6 @@ Type parse_StructSpecifier(StNode *cur){
     }
     else if(IsProd(cur,5,"STRUCT","OptTag","LC","DefList","RC")){
         Type cur_type = Struct_Init();
-        new_Scope();
-        cur_type->structure->tail = parse_DefList(nxt->siblings->siblings->siblings,SYM_STRUCT) ;
-        delete_Scope();
         if(nxt->siblings->is_empty ){ 
             char tmp[100];
             sprintf(tmp,"Annoymous_dashkdkasj%d",annoymous_cnt++);
@@ -403,12 +408,17 @@ Type parse_StructSpecifier(StNode *cur){
             throwError(16,cur->line_no);
             return NULL;
         }
-
         Symbol new_struct =Symbol_Init(cur_type,SYM_STRUCT);
         if(!new_struct) return NULL; 
         new_struct->name = cpstr(cur_type->structure->name);
-        new_struct->type = cur_type;
+        new_struct->type = NULL;
         HT_Insert(SymbolTable,new_struct->name, new_struct);
+        new_Scope();
+        cur_type->structure->tail = parse_DefList(nxt->siblings->siblings->siblings,SYM_STRUCT) ;
+        delete_Scope();
+
+        new_struct->type = cur_type;
+
         
         return cur_type;
     }
@@ -434,7 +444,7 @@ Type  parse_Specifier(StNode * cur){
   return cur_type;
 }
 FieldList parse_Dec(StNode *cur,Type curtype,int type){
-    if(cur == NULL || curtype == NULL) return NULL;
+    if(cur == NULL ) return NULL;
     CorrectNode(cur,"Dec");
     StNode *nxt = cur->child;
     if(IsProd(cur,1,"VarDec")){
@@ -445,31 +455,26 @@ FieldList parse_Dec(StNode *cur,Type curtype,int type){
         // printf("%p %d\n",curtype,curtype->rval);
         if(type == SYM_STRUCT){
             throwError(15,cur->line_no);
-            return  NULL;
+            // return  NULL;
         }
-
+        
+        FieldList ret = parse_VarDec(nxt,curtype,type);
         Type assignedtype = parse_Exp(nxt->siblings->siblings);
         if(curtype== NULL || assignedtype == NULL) {
-            return NULL;
+            // return NULL;
         }
-
-        if(!same_type(assignedtype,curtype)){
+        if(!same_type(assignedtype,final_type)){
             throwError(5,cur->line_no);
-            return NULL;
-        }
-        else if(!is_rval(nxt)){
-            assert(0);
-            throwError(6,cur->line_no);
-            return NULL;
+            // return NULL;
         }
 
-        return parse_VarDec(nxt,curtype,type);
+        return ret;
     }
     // assert(0);
 
 }
 FieldList parse_DecList(StNode *cur, Type curtype,int type){
-    if(cur == NULL || curtype == NULL) return NULL;
+    if(cur == NULL ) return NULL;
     StNode *nxt = cur->child;
     FieldList ret;
     if(IsProd(cur,1,"Dec")){
@@ -574,18 +579,22 @@ FieldList parse_VarList(StNode *cur,int type){
         return nxt_param;
     }
 }
+bool is_def = true;
+
 Type parse_FunDec(StNode * cur, Type ret){
     if(cur == NULL || ret == NULL) return NULL;
     StNode * id = cur->child;
     Symbol curfunc = HT_Find(SymbolTable ,id->st_val.str_val); 
-    if(curfunc && curfunc->type->function.defined){
+    if(curfunc && curfunc->type->function.defined && is_def){
         throwError(4,cur->line_no);
+        right_defined = false;
     }
     else if(!curfunc){
         curfunc = Symbol_Init(NULL,SYM_FUNCTION);
         curfunc->name = cpstr(id->st_val.str_val);
         curfunc->type = NULL; 
         HT_Insert(SymbolTable,curfunc->name,curfunc);
+        
     }
     new_Scope();
     FieldList paramlist = parse_VarList(id->siblings->siblings,SYM_FUNCTION);
@@ -609,14 +618,15 @@ Type parse_FunDec(StNode * cur, Type ret){
     
     if(curfunc->type && !same_type(func,curfunc->type)){
             // assert(0);
-        print_type(curfunc->type,0);
-        print_type(func,0);
+        // print_type(curfunc->type,0);
+        // print_type(func,0);
         throwError(19,cur->line_no);
+        right_defined  = false;
     }
     if(!curfunc->type){
          curfunc->type = func;
     }
-    func_list[func_cnt++] = id;
+    if(right_defined) func_list[func_cnt++] = id;
     return curfunc->type;
 }   
 void parse_ExtDef(StNode * cur){
@@ -634,11 +644,10 @@ void parse_ExtDef(StNode * cur){
             return;
         }
         
-        parse_Compst(nxt->siblings->siblings,rettype,SYM_FUNCTION);
+        parse_Compst(nxt->siblings->siblings,rettype,SYM_VAR);
         delete_Scope();
-        functype->function.defined = true;
-
-
+        if(right_defined) functype->function.defined = true;
+        right_defined = true;
     }
     else if(IsProd(cur,2 ,"Specifier","SEMI")){
         Type structtype = parse_Specifier(nxt);
@@ -651,8 +660,11 @@ void parse_ExtDef(StNode * cur){
     else if(IsProd(cur, 3,"Specifier","FunDec","SEMI")){
         //进行解析
         Type rettype = parse_Specifier(nxt);
+        is_def =false;
         Type functype = parse_FunDec(nxt->siblings,rettype);
         delete_Scope();
+        is_def = true;
+        right_defined  = true;
         if(functype == NULL){
             return;
         }
