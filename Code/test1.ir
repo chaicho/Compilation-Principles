@@ -1,0 +1,32 @@
+
+FUNCTION  add :
+PARAM v1
+t4 := v1
+t6 := #0
+t7 := t6 * #4
+t8 := t4 + t7
+t2 := *t8
+t9 := v1
+t11 := #1
+t12 := t11 * #4
+t13 := t9 + t12
+t3 := *t13
+t1 := t2 + t3
+RETURN t1
+
+FUNCTION  main :
+DEC v2 8
+DEC v3 8
+v4 := t6
+v5 := t6
+LABEL label1 :
+t18 := #2
+IF v4 < t18 GOTO label2
+GOTO label3
+LABEL label2 :
+t20 := v4 + t11
+v4 := t20
+GOTO label1
+LABEL label3 :
+WRITE t6
+RETURN t6

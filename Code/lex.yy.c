@@ -394,7 +394,7 @@ static const flex_int16_t yy_acclist[142] =
        39,   41,   42,   39,   41,   42,   24,   41,   42,   41,
        42,   25,   41,   42,   17,   40,   29,    1,    4,    2,
 
-        4,   18,   16,   19,   39,   39,   39,   33,   39,   39,
+        4,   19,   16,   18,   39,   39,   39,   33,   39,   39,
        39,   39,   39,   28,    8,    7,    3,    4,   39,   39,
        38,   39,   39,   39,   39,    7,    9,   34,   39,   39,
        39,   39,   39,   39,   39,   35,   39,   36,   39,   37,
@@ -570,11 +570,9 @@ char *yytext;
     #include  "debug.h"
     #include <stdlib.h>
     #include "syntax.tab.h"
+    #include "common.h"
     int yycolumn = 1;
     char *ptr;
-    enum{
-        LT, LE, GT, GE, EQ, NE
-    };
     #define YY_USER_ACTION                                  \
         yylloc.first_line   = yylloc.last_line = yylineno;  \
         yylloc.first_column = yycolumn;                     \
@@ -592,8 +590,8 @@ char *yytext;
     }                                           \
     while (0);                                  \
     return TOKEN;     
-#line 596 "./lex.yy.c"
-#line 597 "./lex.yy.c"
+#line 594 "./lex.yy.c"
+#line 595 "./lex.yy.c"
 
 #define INITIAL 0
 
@@ -816,9 +814,9 @@ YY_DECL
 		}
 
 	{
-#line 45 "./lexical.l"
+#line 43 "./lexical.l"
 
-#line 822 "./lex.yy.c"
+#line 820 "./lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -898,206 +896,206 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 46 "./lexical.l"
+#line 44 "./lexical.l"
 {  yylval.int_val = strtol(yytext ,&ptr, 8);   REJECT; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 47 "./lexical.l"
+#line 45 "./lexical.l"
 {  yylval.int_val = strtol(yytext ,&ptr, 10);  REJECT; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 48 "./lexical.l"
+#line 46 "./lexical.l"
 {  yylval.int_val = strtol(yytext ,&ptr, 16);  REJECT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 49 "./lexical.l"
+#line 47 "./lexical.l"
 {RETURNT(INT);}
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 50 "./lexical.l"
+#line 48 "./lexical.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "./lexical.l"
+#line 50 "./lexical.l"
 { }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 54 "./lexical.l"
+#line 52 "./lexical.l"
 { yylval.float_val = atof(yytext);Log("FLOAT  %lf",yylval.float_val); RETURNT (FLOAT);}
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 55 "./lexical.l"
+#line 53 "./lexical.l"
 {}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 56 "./lexical.l"
+#line 54 "./lexical.l"
 { }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 58 "./lexical.l"
+#line 56 "./lexical.l"
 {  RETURNT (PLUS); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 60 "./lexical.l"
+#line 58 "./lexical.l"
 {  RETURNT (MINUS);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 62 "./lexical.l"
+#line 60 "./lexical.l"
 {  RETURNT (STAR);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 64 "./lexical.l"
+#line 62 "./lexical.l"
 {  RETURNT (DIV);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 66 "./lexical.l"
-{ installrelop(LE); RETURNT (RELOP);}
+#line 64 "./lexical.l"
+{ installrelop(LT); RETURNT (RELOP);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 67 "./lexical.l"
+#line 65 "./lexical.l"
 { installrelop(GT); RETURNT (RELOP);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 68 "./lexical.l"
+#line 66 "./lexical.l"
 { installrelop(EQ); RETURNT (RELOP);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 69 "./lexical.l"
+#line 67 "./lexical.l"
 { installrelop(NE); RETURNT (RELOP);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 70 "./lexical.l"
-{ installrelop(LE); RETURNT (RELOP);}
+#line 68 "./lexical.l"
+{ installrelop(GE); RETURNT (RELOP);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 71 "./lexical.l"
-{ installrelop(GE); RETURNT (RELOP);}
+#line 69 "./lexical.l"
+{ installrelop(LE); RETURNT (RELOP);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 72 "./lexical.l"
+#line 70 "./lexical.l"
 { RETURNT (LP) ;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 73 "./lexical.l"
+#line 71 "./lexical.l"
 { RETURNT (RP) ;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 74 "./lexical.l"
+#line 72 "./lexical.l"
 { RETURNT (LB) ;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 75 "./lexical.l"
+#line 73 "./lexical.l"
 { RETURNT (RB) ;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 76 "./lexical.l"
+#line 74 "./lexical.l"
 { RETURNT (LC) ;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 77 "./lexical.l"
+#line 75 "./lexical.l"
 { RETURNT (RC) ;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 78 "./lexical.l"
+#line 76 "./lexical.l"
 { RETURNT (SEMI);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 79 "./lexical.l"
+#line 77 "./lexical.l"
 { RETURNT (ASSIGNOP); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 80 "./lexical.l"
+#line 78 "./lexical.l"
 { RETURNT (OR);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 81 "./lexical.l"
+#line 79 "./lexical.l"
 { RETURNT (AND);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 82 "./lexical.l"
+#line 80 "./lexical.l"
 { RETURNT (DOT);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 83 "./lexical.l"
+#line 81 "./lexical.l"
 { RETURNT (NOT);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 84 "./lexical.l"
+#line 82 "./lexical.l"
 { RETURNT (COMMA);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 86 "./lexical.l"
+#line 84 "./lexical.l"
 {RETURNT (IF);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 87 "./lexical.l"
+#line 85 "./lexical.l"
 {RETURNT (ELSE);}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 88 "./lexical.l"
+#line 86 "./lexical.l"
 {RETURNT (WHILE);}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 89 "./lexical.l"
+#line 87 "./lexical.l"
 {RETURNT (RETURN);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 90 "./lexical.l"
+#line 88 "./lexical.l"
 {RETURNT (STRUCT);}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 91 "./lexical.l"
+#line 89 "./lexical.l"
 { yylval.str_val = strdup(yytext); RETURNT (TYPE);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 93 "./lexical.l"
+#line 91 "./lexical.l"
 { yylval.str_val = strdup(yytext); RETURNT (ID);} 
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 96 "./lexical.l"
+#line 94 "./lexical.l"
 {
     if (yytext[yyleng - 2] == '\\') {
     yyless(yyleng - 1);
@@ -1111,17 +1109,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 107 "./lexical.l"
+#line 105 "./lexical.l"
 { 
     flexerror( "Mysterious character"); 
  }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 110 "./lexical.l"
+#line 108 "./lexical.l"
 ECHO;
 	YY_BREAK
-#line 1125 "./lex.yy.c"
+#line 1123 "./lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -2111,7 +2109,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 110 "./lexical.l"
+#line 108 "./lexical.l"
 
 inline void   installID(){
     yylval.str_val = strdup(yytext);

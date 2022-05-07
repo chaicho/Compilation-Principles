@@ -33,7 +33,7 @@ HashTable *  HT_Init(){
       assert(0);
 	  }
 	  SymbolTable->ele_max = TABLE_SIZE;
-		Log("%d",SymbolTable->ele_max)	;
+		// Log("%d",SymbolTable->ele_max)	;
 	  SymbolTable->ele_count = 0;
 	  for(int i = 0; i < TABLE_SIZE; i++)
 	  	SymbolTable->table[i] = NULL;
@@ -70,7 +70,7 @@ Symbol HT_Find(HashTable * hasht, char* key)
 	while(cur != NULL)
 	{
 		if(!strcmp(cur->key, key)){
-			Log("Found : %s",cur->key);
+			// Log("Found : %s",cur->key);
 			return cur->data;
 		}
 		cur = cur->next;
@@ -81,7 +81,7 @@ Symbol HT_Find(HashTable * hasht, char* key)
 void HT_Remove(HashTable* hasht, char* key)
 {
 	unsigned h = hash_pjw(key) % hasht->ele_max;
-	Log("Delete :  %s",key);
+	// Log("Delete :  %s",key);
 	HashElem * cur = hasht->table[h];
 	// Assert(cur,"%s SLOT %d",key,h);
 	HashElem * prev = NULL;
@@ -109,22 +109,22 @@ void HT_Remove(HashTable* hasht, char* key)
 }
 
 void new_Scope(){
-		Log("Enter new scope");
+		// Log("Enter new scope");
 		Stack_top++;
 		scope_stack[Stack_top] = NULL;
 }
 void delete_Scope(){
-	 	Log("Begin Delete");
+	 	// Log("Begin Delete");
 		Symbol cur = scope_stack[Stack_top];
 		while (cur)
 		{
-			  Log("remove %s",cur->name);
+			  // Log("remove %s",cur->name);
 				HT_Remove(SymbolTable,cur->name);
 				cur = cur->next;
 		}
 		scope_stack[Stack_top] =  NULL;
 		Stack_top--;
-		Log("End Delete");
+		// Log("End Delete");
 		// assert(0);
 }
 

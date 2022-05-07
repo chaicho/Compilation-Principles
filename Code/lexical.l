@@ -4,11 +4,9 @@
     #include  "debug.h"
     #include <stdlib.h>
     #include "syntax.tab.h"
+    #include "common.h"
     int yycolumn = 1;
     char *ptr;
-    enum{
-        LT, LE, GT, GE, EQ, NE
-    };
     #define YY_USER_ACTION                                  \
         yylloc.first_line   = yylloc.last_line = yylineno;  \
         yylloc.first_column = yycolumn;                     \
@@ -63,12 +61,12 @@ COMMENT_BLOCK   (\/\*([^*]|(\*+([^*\/])))*\*+\/)
 
 "/"     {  RETURNT (DIV);}
 
-"<"     { installrelop(LE); RETURNT (RELOP);}
+"<"     { installrelop(LT); RETURNT (RELOP);}
 ">"     { installrelop(GT); RETURNT (RELOP);}
 "=="    { installrelop(EQ); RETURNT (RELOP);}
 "!="    { installrelop(NE); RETURNT (RELOP);}
-"<="    { installrelop(LE); RETURNT (RELOP);}
 ">="    { installrelop(GE); RETURNT (RELOP);}
+"<="    { installrelop(LE); RETURNT (RELOP);}
 "("     { RETURNT (LP) ;}
 ")"     { RETURNT (RP) ;}
 "["     { RETURNT (LB) ;}

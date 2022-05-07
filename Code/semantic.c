@@ -1,7 +1,7 @@
 #include "symbol.h"
 #include "ast.h"
 #include <stdlib.h>
-
+#include "ir.h"
 #include <stdbool.h>
 #include "hashtable.h"
 #include <string.h>
@@ -58,11 +58,7 @@ bool same_field(FieldList a, FieldList b,int type){
     else if(p_a!=NULL || p_b!=NULL) return false;
     return false;
 }
-char *cpstr(char * s){
-    char * ret = malloc(strlen(s) + 1);
-    strcpy(ret,s);
-    return ret;
-}
+
 bool same_type(Type a, Type b){
     if(a== NULL && b==NULL) return true;
     else if(a==NULL || b== NULL) return false;
@@ -106,10 +102,10 @@ bool IsProd(const StNode* cur, int num, ...) {
     }
     ret = ((child == NULL) && i == num);
     #ifdef DEBUG    
-    if(ret) {
-        printf("PROD: ");
-        print_node(cur);
-    }
+    // if(ret) {
+    //     printf("PROD: ");
+    //     print_node(cur);
+    // }
     #endif
     va_end(valist);
     return ret;
@@ -330,7 +326,7 @@ FieldList parse_VarDec(StNode * cur, Type cur_type,int type){
         FieldList ret = NULL;
         Symbol cursymbol = HT_Find(SymbolTable,cur->child->st_val.str_val);
         if(cursymbol){
-            if(cursymbol->kind == SYM_STRUCT ){
+            if( cursymbol->kind == SYM_STRUCT ){
                 throwError(3,cur ->line_no);
                 return NULL;
             }
@@ -365,8 +361,9 @@ FieldList parse_VarDec(StNode * cur, Type cur_type,int type){
         array_type->kind = ARRAY;
         array_type->array.elem = cur_type;
         array_type->array.size = nxt->siblings->siblings->st_val.int_val;
-        return parse_VarDec(nxt,array_type,type);
- 
+        array_type->mem_size = array_type->array.size * cur_type->mem_size;
+        FieldList ret =  parse_VarDec(nxt,array_type,type);
+
     }
 }
 FieldList parse_ExtDecList(StNode * cur, Type cur_type,int type ){
@@ -416,9 +413,13 @@ Type parse_StructSpecifier(StNode *cur){
         new_Scope();
         cur_type->structure->tail = parse_DefList(nxt->siblings->siblings->siblings,SYM_STRUCT) ;
         delete_Scope();
-
+        FieldList cur = cur_type->structure->tail;
+        while (cur)
+        {
+            cur_type->mem_size += cur->type->mem_size;
+            cur = cur->tail;
+        }
         new_struct->type = cur_type;
-
         
         return cur_type;
     }
@@ -642,9 +643,9 @@ void parse_ExtDef(StNode * cur){
         Type functype = parse_FunDec(nxt->siblings,rettype);   
         if(functype == NULL){
             return;
-        }
-        
+        }        
         parse_Compst(nxt->siblings->siblings,rettype,SYM_VAR);
+        translate_extdef(cur);
         delete_Scope();
         if(right_defined) functype->function.defined = true;
         right_defined = true;
@@ -685,11 +686,27 @@ void parse_ExtDefList(StNode * cur){
     parse_ExtDef(cur->child);
     parse_ExtDefList(cur->child->siblings);
 }
+void IR_Init(){
+    Type read_type = Type_Init(FUNCTION);
+    read_type->function.retType =  type_int;
+
+    Symbol read_symbol = Symbol_Init(read_type, SYM_FUNCTION);
+    read_symbol->name = cpstr("read");
+    HT_Insert(SymbolTable,read_symbol->name,read_symbol);
+    
+    Type write_type = Type_Init(FUNCTION);
+    write_type->function.paramList = malloc(sizeof(struct FieldList_));
+    write_type->function.paramList->type = type_int;
+    Symbol write_symbol = Symbol_Init(write_type, SYM_FUNCTION);
+    write_symbol->name = cpstr("write");
+    HT_Insert(SymbolTable,write_symbol->name,write_symbol);     
+}
 void parse_tree(StNode * cur){
   HT_Init();
+  IR_Init();
   parse_ExtDefList(cur->child);
   for(int i= 0  ;i < func_cnt;i++){
-      Log("%s",func_list[i]->st_val.str_val);
+    //   Log("%s",func_list[i]->st_val.str_val);
       if(!HT_Find(SymbolTable,func_list[i]->st_val.str_val)->type->function.defined){
           throwError(18,func_list[i]->line_no);
       }

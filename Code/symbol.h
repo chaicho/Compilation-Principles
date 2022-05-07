@@ -1,17 +1,19 @@
  #ifndef __SYMBOL__
  #define __SYMBOL__
 #include "ast.h"
+#include "common.h"
+#include <stdbool.h>
 typedef struct Type_* Type;
 typedef struct FieldList_* FieldList;
 typedef struct Param_* Param;
 typedef struct Func_* Func;
-typedef struct Symbol_* Symbol;
- 
-
- struct Type_
+typedef struct Symbol_* Symbol; 
+// extern struct Operand_;
+struct Type_
 {
   enum { BASIC, ARRAY, STRUCTURE , FUNCTION  } kind;
   int type_num;
+  int  mem_size;
   union
   {
   // 基本类型
@@ -45,6 +47,7 @@ struct Symbol_
    enum{SYM_STRUCT,SYM_FUNCTION,SYM_VAR} kind;
    Symbol  next;
    struct Type_ const * type;
+   struct Operand_ * alias;
    int depth;
 };
 Type Basic_Init(StNode * );
@@ -59,4 +62,6 @@ Type Int_Init();
 Type Float_Init();
 int set_find(int);
 void set_union(int,int);
+bool same_type(Type a, Type b);
+
 #endif

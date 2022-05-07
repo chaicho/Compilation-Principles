@@ -34,11 +34,13 @@ void set_union(int i,int j){
 }
 struct Type_ Type_int ={
   .kind  =  BASIC,
+  .mem_size = 4,
   .basic =  TYPE_INT,
 };
 struct  Type_ Type_float = 
 {
   .kind = BASIC,
+  .mem_size = 4, 
   .basic = TPYE_FLOAT,
 };
 Type type_int = &Type_int;
@@ -46,11 +48,13 @@ Type type_float = &Type_float;
 Type Int_Init(){
   Type ret = Type_Init(BASIC);
   ret->basic = TYPE_INT;
+  ret->mem_size = 4;
   return ret;  
 }
 Type  Float_Init(){
   Type ret = Type_Init(BASIC);
   ret->basic = TPYE_FLOAT;
+  ret->mem_size =  4;
   return ret;  
 }
 Type  Basic_Init(StNode *cur){
