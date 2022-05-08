@@ -1,4 +1,4 @@
-#include <stdio.h>stm
+#include <stdio.h>
 #include"ast.h"
 #include "debug.h"
 #include "semantic.h"
@@ -10,6 +10,7 @@ extern FILE * yyin;
 extern int errlineno;
 extern yydebug;
 extern InterCode code_root; 
+extern FILE * debug_file;
 
 #ifdef FLEXDEBUG
 int main(int argc ,char ** argv){
@@ -43,9 +44,14 @@ int main(int argc, char** argv)
     yyparse(); 
     if(errlineno ==  -1 ) {
         // st_PrintTree(root , 0 );
+        #ifdef DEBUG
+        debug_file = fopen("../Code/debug.ir","w+"); 
+        // assert(debug_file);
+        #endif
         parse_tree(root);
-        // assert(0);
         #ifdef L3
+
+        Log("Finish Parser");
         // Log("%s",argv[2]);
         FILE * outdir =  fopen (argv[2], "w+");
         assert(outdir);

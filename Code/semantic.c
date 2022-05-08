@@ -697,8 +697,10 @@ void IR_Init(){
     Type write_type = Type_Init(FUNCTION);
     write_type->function.paramList = malloc(sizeof(struct FieldList_));
     write_type->function.paramList->type = type_int;
+    write_type->function.retType = type_int;
     Symbol write_symbol = Symbol_Init(write_type, SYM_FUNCTION);
     write_symbol->name = cpstr("write");
+
     HT_Insert(SymbolTable,write_symbol->name,write_symbol);     
 }
 void parse_tree(StNode * cur){

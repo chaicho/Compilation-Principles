@@ -58,12 +58,12 @@ Type  Float_Init(){
   return ret;  
 }
 Type  Basic_Init(StNode *cur){
-    Log("%s",cur->st_val.str_val);
+    // Log("%s",cur->st_val.str_val);
     if(!strcmp(cur->st_val.str_val ,"int"))  {
-        return Int_Init();
+        return type_int;
     }
     else if(!strcmp(cur->st_val.str_val, "float")) {
-        return Float_Init();
+        return type_float;
     }
 }
 Type Type_Init(int type){

@@ -69,11 +69,21 @@ Operand new_relop(int id){
 }
 
 Operand new_function(char *name){
-  Operand ret = new_operand();
-  ret->kind = OP_FUNCTION;
-  ret->name = cpstr(name);
-  Log("%s",ret->name);
-  return ret;
+  Symbol cur_symbol = HT_Find(SymbolTable,name);
+  assert(cur_symbol);
+  if(cur_symbol->alias == NULL){
+    Operand ret= new_operand();
+    ret->kind = OP_FUNCTION;
+    ret->type = cur_symbol->type;
+    // print_type(cur_symbol->type,0);
+    ret->name = cpstr(name);
+    cur_symbol->alias = ret;
+    // Log("%s",ret->name);
+    return ret;
+  }
+  else {
+    return cur_symbol->alias;
+  }
 }
 InterCode IR_assign(Operand lft, Operand rht){
   if(lft == NULL) return NULL;
@@ -88,6 +98,7 @@ InterCode IR_assign(Operand lft, Operand rht){
 InterCode IR_binop(Operand dst,Operand op1, Operand op2,int bintype){
     InterCode ret = new_intercode();
     ret->kind = bintype;
+    dst->type = op1->type;
     ret->binop.result= dst;
     ret->binop.op1 = op1;
     ret->binop.op2 = op2;
@@ -134,6 +145,7 @@ InterCode IR_call(Operand place,Operand func){
   ret->kind = IR_CALL;
   ret->call.func = func;
   ret->call.result = place;
+  ret->call.result->type = func->type->function.retType; 
   return ret;
 }
 InterCode IR_dec(Operand v){
@@ -151,13 +163,20 @@ InterCode IR_getaddr(Operand dst,Operand s){
   return ret;
 }
 InterCode IR_loadval(Operand a ,Operand b){
+  if(a == NULL) return NULL;
   InterCode ret = new_intercode();
   ret->kind = IR_LOADVAL;
+  //not sure
+  a->type = b->type;
   ret->loadval.dest_val = a;
   ret->loadval.target_addr = b;
   return ret;
 }
 InterCode IR_memwrite(Operand mem, Operand val){
+  if(mem == NULL ){
+    assert(0);
+    return NULL;
+  }
   InterCode ret =new_intercode();
   ret->kind  = IR_MEMWRITE;
   ret->memwrite.mem = mem;

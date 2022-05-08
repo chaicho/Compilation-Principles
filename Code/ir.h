@@ -3,7 +3,6 @@
 #include "semantic.h"
 #include "common.h"
 #include "debug.h"
-
 typedef struct Operand_*  Operand;
 typedef struct InterCode_*  InterCode;
 typedef struct InterCodeList_*  InterCodeList;
@@ -45,6 +44,7 @@ struct Operand_ {
  enum OP_KIND kind;
  bool is_add;
  struct Type_ * type;
+ Operand addr_op;
  union {
     int var_no;
     int value;
@@ -92,7 +92,9 @@ struct IRpair_
 static inline  InterCode ConcatIr(InterCode a, InterCode b){
     // assert(!a && b);
     if(a == NULL)  return b;
-    if(b == NULL) return a;
+    if(b == NULL) {
+      return a;
+    }
     if(a== NULL && b == NULL)  return NULL;  
     InterCode atail = a;
     while (atail->next)
@@ -125,13 +127,26 @@ InterCode translate_stmtlist(StNode *cur);
 InterCode translate_extdef(StNode * cur);
 static inline void ListAppend( InterCodeList l,InterCode c){
   if(l->head == NULL)  l->head = c;
-  if(l->tail){
-     l->tail->next  =c; 
-     c->prev = l->tail;
+  else{
+    l-> head = ConcatIr(l->head,c);
+    l->tail = c;
   }
-  l->tail = c;
+}
+static inline InterCode ListReverse(InterCodeList list){
+    InterCode tmp = NULL;
+    InterCode current = list->head;
+    InterCode ret; 
+    while (current) {
+        tmp = current->prev; 
+        current->prev = current->next;
+        if(!current->next) ret = current; 
+        current->next = tmp;           
+        current = current->prev; 
+    }
+    return ret;
 }
 // void debug_ir(InterCode a);
-char *OpName(Operand op);
+static inline char *OpName(Operand op);
 void Output_IR(FILE * f,InterCode a);
+
 #endif
