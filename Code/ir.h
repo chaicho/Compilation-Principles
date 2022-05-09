@@ -92,9 +92,7 @@ struct IRpair_
 static inline  InterCode ConcatIr(InterCode a, InterCode b){
     // assert(!a && b);
     if(a == NULL)  return b;
-    if(b == NULL) {
-      return a;
-    }
+    if(b == NULL)  return a;
     if(a== NULL && b == NULL)  return NULL;  
     InterCode atail = a;
     while (atail->next)
@@ -149,5 +147,5 @@ void debug_IR(InterCode code);
 // void debug_ir(InterCode a);
 static inline char *OpName(Operand op);
 void Output_IR(FILE * f,InterCode a);
-
+void debugtillend_IR(InterCode code);
 #endif

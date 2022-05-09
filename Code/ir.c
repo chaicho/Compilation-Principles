@@ -26,26 +26,27 @@ FILE  * debug_file;
   Output_IR(debug_file,code);
   return ;
 }
-static inline void debugtillend_IR(InterCode code){
+void debugtillend_IR(InterCode code){
+  if(!debug_file) return;
   while (code)
   {
     Output_IR(debug_file,code);
     Log("%d",code->kind);
     code = code->next;
   }
+  fprintf(debug_file,"\n\n\n");
   return ;
 }
 InterCode ConcatCodes(int num, ...)
 {
+  // Log("Concat");
   va_list valist;
   va_start(valist, num);
-  InterCode cur = va_arg(valist, InterCode);
-  InterCode ret = cur;
+  InterCode ret  =  va_arg(valist, InterCode);
   for (int i = 0; i < num - 1; i++)
   {
     InterCode nxt = va_arg(valist, InterCode);
     ret = ConcatIr(ret, nxt);
-    cur = nxt;
   }
   va_end(valist);
   return ret;
@@ -226,11 +227,14 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     Operand function = new_function(id);
     InterCodeList arg_list = malloc(sizeof(struct InterCodeList_));
     InterCode code1 = translate_args(exp->child->siblings->siblings, arg_list);
-  
     InterCode code2  = ListReverse(arg_list);
     InterCode cur  = code2;
     if(!place) place = new_temp();
-    return ConcatCodes(3, code1, code2, IR_call(place, function));
+    InterCode assign  =IR_call(place, function);
+    InterCode ret =  ConcatCodes(3, code1, code2,assign );
+    debugtillend_IR(assign);
+
+    return ret;
   }
   else if (IsProd(exp, 4, "Exp", "LB", "Exp", "RB"))
   {
@@ -346,7 +350,12 @@ InterCode translate_stmt(StNode *stmt)
   else if (IsProd(stmt, 1, "CompSt"))
   {
     // assert(0);
-    return translate_compst(stmt->child);
+    new_Scope();
+    parse_Compst(stmt->child,NULL,2);
+    // assert(0);
+    InterCode ret= translate_compst(stmt->child);
+    delete_Scope();
+    return ret;
   }
   else if (IsProd(stmt, 3, "RETURN", "Exp", "SEMI"))
   {
@@ -767,7 +776,7 @@ void Output_IR(FILE *f, InterCode op)
     break;
   default:
     fprintf(stderr, "\033[31mERROR in outputIR! Unknown op kind %d.\033[0m\n", op->kind);
-    assert(0);
+    // assert(0);
     break;
   }
   fflush(f);
