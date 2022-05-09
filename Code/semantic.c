@@ -17,8 +17,9 @@ bool right_defined = true;
 FieldList parse_DefList(StNode *cur,int type);
 Type parse_Exp(StNode *);
 bool same_type(Type a, Type b);
+
 extern HashTable * SymbolTable;
-bool is_symbol = true;//表示当前是否要加入符号表
+bool is_symbol = true; //表示当前是否要加入符号表
 bool is_param = false;
 static inline void throwError(int ErdecrorType,int line_num);
 static inline bool CorrectNode(StNode * n, const char *name) {
@@ -26,7 +27,8 @@ static inline bool CorrectNode(StNode * n, const char *name) {
 }
 StNode * func_list[2000];
 int func_cnt =  0;
-
+extern InterCode * compst_codes;
+extern int cur_compst ;
 void print_node(StNode *cur){
     #ifndef DEBUG
         return;
@@ -561,6 +563,8 @@ void parse_Compst(StNode *cur, Type rettype,int type){
     StNode *nxt = cur->child;
     parse_DefList(nxt->siblings,type);
     parse_StmtList(nxt->siblings->siblings,rettype,type);
+    // cur->compst_code = translate_compst(cur);
+    // debug_IR(cur->compst_code);
 }
 FieldList parse_ParamDec(StNode *cur,int type){
     StNode * nxt= cur->child;

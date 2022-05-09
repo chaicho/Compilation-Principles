@@ -145,6 +145,7 @@ static inline InterCode ListReverse(InterCodeList list){
     }
     return ret;
 }
+void debug_IR(InterCode code);
 // void debug_ir(InterCode a);
 static inline char *OpName(Operand op);
 void Output_IR(FILE * f,InterCode a);

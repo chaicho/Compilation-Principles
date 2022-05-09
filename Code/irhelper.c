@@ -49,6 +49,7 @@ Operand new_constant(int v){
 }
 Operand new_var(char * id){
   Symbol cur_symbol = HT_Find(SymbolTable,id);
+  assert(cur_symbol);
   if(cur_symbol->alias == NULL){
     Operand ret= new_operand();
     ret->kind = OP_VARIABLE;
@@ -157,6 +158,7 @@ InterCode IR_dec(Operand v){
 InterCode IR_getaddr(Operand dst,Operand s){
   InterCode ret = new_intercode();
   ret->kind =  IR_GETADDR;
+  dst->type = s->type;
   ret->getaddr.dest_addr = dst;
   ret->getaddr.target_val = s;
   dst->is_add = true;
@@ -210,6 +212,8 @@ InterCode IR_write(Operand a){
 InterCode IR_caladdr(Operand a,Operand  b,Operand c){
   InterCode ret =new_intercode();
   ret->kind = IR_CALADDR;
+  assert(b->type);
+  // a->type = b->type;
   ret->binop.result = a;
   ret->binop.op1  = b ;
   ret->binop.op2  = c;

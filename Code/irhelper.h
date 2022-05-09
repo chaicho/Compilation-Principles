@@ -27,6 +27,7 @@ InterCode IR_param(Operand);
 InterCode IR_caladdr(Operand dst,Operand  base,Operand offset);
 static inline void cp_op(Operand dst, Operand src){
   memcpy(dst,src,sizeof(struct Operand_));
+  // assert(0);
   return ;
 }
 #endif

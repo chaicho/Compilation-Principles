@@ -17,9 +17,11 @@ extern Type type_int;
 extern HashTable *SymbolTable;
 #define MAX_IMM 100000
 Operand immediate[MAX_IMM] = {0};
+InterCode compst_codes[10000];
+int cur_compst = 0;
 FILE  * debug_file;
-static inline void debug_IR(InterCode code){
-
+ void debug_IR(InterCode code){
+  if(code == NULL ) return;
   Log("%d",code->kind);
   Output_IR(debug_file,code);
   return ;
@@ -93,6 +95,7 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     Operand rht = new_var(id);
     place->type = rht->type;
     place->is_add = lval;
+    assert(rht && rht->type);
     if (lval && rht->type->kind!= BASIC) 
     {
       if(rht->addr_op){
@@ -107,41 +110,68 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     else
     {
       cp_op(place,rht);
+      // print_type(rht->type,0);
+      // assert(0);
       return NULL;
     }
   }
   else if (IsProd(exp, 3, "Exp", "ASSIGNOP", "Exp"))
   {
     //此时左侧的exp一定是左值,id/数组/结构体
+
     StNode *exp1 = exp->child;
     StNode *exp2 = exp->child->siblings->siblings;
     Operand lft = new_temp();
     bool is_simple = false;
     InterCode code1 = translate_exp(exp1, lft, true);
     Operand t1 = new_temp();
-    InterCode code2 = translate_exp(exp2, t1, true);
+    InterCode code2 = translate_exp(exp2, t1, false);
     InterCode code3 = NULL;
     InterCode code4 = NULL;
-    Operand t2;
-    if(t1->type->kind==BASIC){
-      t2 = new_temp();
-      InterCode store_val  = IR_loadval(t2,t1);
-      code2 = ConcatIr(code2,store_val);
-      if (!lft->is_add)
-      {
-          code3 = IR_assign(lft, t2);
-          code4 = IR_assign(place,lft);
-      }
-      else
-      { // addr = int/float
-          code3 = IR_memwrite(lft, t2);
-          code4 = IR_loadval(place,lft);
-      }      
-    }
-    else{
-        // assert(0);
-    }
+    Operand rhtarr = new_temp();
+    InterCode arraycode = translate_exp(exp2, rhtarr, true);
 
+    if(same_type(rhtarr->type,lft->type) && rhtarr->type->kind==ARRAY){
+      // assert(0);
+      // return;
+      int cur_size = 0;
+      const int lft_total = lft->type->mem_size;
+      const int rht_total = rhtarr->type->mem_size;
+      const int ele_size = lft->type->array.elem->mem_size;
+      Operand lft_addr = lft;
+      Operand rht_addr = rhtarr;
+      InterCode ret = ConcatCodes(2,code1,arraycode);
+      if(!lft->is_add){
+          lft_addr =new_temp();
+          ret = ConcatIr(ret,IR_getaddr(lft_addr,lft));
+          // debug_IR(IR_getaddr(lft_addr,lft));
+      }
+      if(!rhtarr->is_add){
+          rht_addr =new_temp();
+          ret = ConcatIr(ret,IR_getaddr(rht_addr,rhtarr));
+      }
+      Operand tmp = new_temp();
+      while (cur_size < lft_total && cur_size < rht_total)
+      {
+          InterCode cp_rht = IR_loadval(tmp,rht_addr);
+          InterCode loadtolft = IR_memwrite(lft_addr,tmp);
+          InterCode lft_new = IR_binop(lft_addr,lft_addr,new_constant(4),IR_ADD); 
+          InterCode rht_new = IR_binop(rht_addr,rht_addr,new_constant(4),IR_ADD); 
+          cur_size += 4;
+          ret = ConcatCodes(5,ret,cp_rht,loadtolft,lft_new,rht_new);
+      }
+      return ret;
+    }
+    if (!lft->is_add)
+    {
+      code3 = IR_assign(lft, t1);
+      code4 = IR_assign(place,lft);
+    }
+    else
+    { // addr = int/float
+      code3 = IR_memwrite(lft, t1);
+      code4 = IR_loadval(place,lft);
+    }
     return ConcatCodes(4, code1, code2, code3, code4);
   }
   else if ((IsProd(exp, 3, "Exp", "PLUS", "Exp") || IsProd(exp, 3, "Exp", "MINUS", "Exp") || IsProd(exp, 3, "Exp", "STAR", "Exp") || IsProd(exp, 3, "Exp", "DIV", "Exp")))
@@ -213,13 +243,14 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     print_type(t1->type->array.elem, 0);
     int ele_size = t1->type->array.elem->mem_size;
     // Log("%d",ele_size);
-    place->type = t1->type->array.elem;
-    place->is_add = lval;
+
     // if(lval) Log("%s IS ADDR",OpName(place));
     // print_type(place->type,0);
     InterCode getaddr;
     Operand offset = new_temp();
     InterCode cal_offset = IR_binop(offset, t2, new_constant(ele_size), IR_MUL);
+    place->type = t1->type->array.elem;
+    place->is_add = lval;
     if (lval)
     {
       getaddr = IR_caladdr(place, t1, offset);
@@ -230,6 +261,7 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     {
       Operand addr_tmp = new_temp();
       getaddr = IR_caladdr(addr_tmp, t1, offset);
+      addr_tmp->type = place->type;
       InterCode assgin = IR_loadval(place, addr_tmp);
       return ConcatCodes(5, code1, code2, cal_offset, getaddr, assgin);
     }
@@ -246,18 +278,23 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
       offset += cur->type->mem_size;
       cur = cur->tail;
     }
+    assert(cur);
+    Log("%s",cur->name);
     place->type = cur->type;
     place->is_add = lval;
     if (lval )
     {
       InterCode code2 = IR_caladdr(place, t1, new_constant(offset));
+      assert(place->type);
       return ConcatIr(code1, code2);
     }
     else
     {
       Operand tmp_addr = new_temp();
       InterCode code2 = IR_caladdr(tmp_addr, t1, new_constant(offset));
+      tmp_addr->type = cur->type;
       InterCode code3 = IR_loadval(place, tmp_addr);
+      assert(place->type);
       return ConcatCodes(3, code1, code2, code3);
     }
   }
@@ -283,7 +320,7 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
 }
 InterCode translate_compst(StNode *cur)
 {
-  if (cur == NULL)
+  if (cur == NULL || cur->is_empty)
     return NULL;
   else
   {
@@ -305,6 +342,7 @@ InterCode translate_stmt(StNode *stmt)
   }
   else if (IsProd(stmt, 1, "CompSt"))
   {
+    // assert(0);
     return translate_compst(stmt->child);
   }
   else if (IsProd(stmt, 3, "RETURN", "Exp", "SEMI"))
@@ -322,6 +360,7 @@ InterCode translate_stmt(StNode *stmt)
     Operand label2 = new_label();
     InterCode code1 = translate_cond(exp, label1, label2);
     InterCode code2 = translate_stmt(exp->siblings->siblings);
+    // assert(0);
     return ConcatCodes(4, code1, IR_label(label1), code2, IR_label(label2));
   }
   else if (IsProd(stmt, 7, "IF", "LP", "Exp", "RP", "Stmt", "ELSE", "Stmt"))
@@ -416,6 +455,10 @@ InterCode translate_args(StNode *args, InterCodeList arg_list)
     StNode *exp = args->child;
     Operand t1 = new_temp();
     InterCode code1 = translate_exp(args->child,t1,true);
+    if (!(t1 && t1->type)){
+      // debugtillend_IR(code1);
+      assert(0);
+    }
     if(t1->type->kind == BASIC && t1->is_add){
         Operand t2 = new_temp();
         code1 = ConcatIr(code1,IR_loadval(t2,t1));
@@ -457,17 +500,24 @@ InterCode translate_args(StNode *args, InterCodeList arg_list)
 
 InterCode translate_dec(StNode *dec, bool is_param)
 {
+  if(dec == NULL || dec->is_empty){
+    assert(0);
+    return NULL;
+  }
   StNode *cur = dec->child;
   while (cur != NULL && !same(cur->name, "ID"))
   {
     cur = cur->child;
   }
+  // assert(0);
   assert(cur != NULL && same(cur->name, "ID"));
   StNode *ID = cur;
+  Log("%s",ID->st_val.str_val);
   Operand v1 = new_var(ID->st_val.str_val);
   InterCode dec_code = NULL;
   if (v1->type->kind != BASIC)
   {
+    v1->is_add  = false;
     dec_code = IR_dec(v1);
   }
   if (IsProd(dec, 1, "VarDec"))
@@ -478,6 +528,8 @@ InterCode translate_dec(StNode *dec, bool is_param)
   {
     Operand t1 = new_temp();
     InterCode code2 = translate_exp(dec->child->siblings->siblings, t1, false);
+    // debug_IR(code2);
+    // assert(0);
     return ConcatCodes(3, dec_code, code2 ,IR_assign(v1,t1));
   }
 }
@@ -486,6 +538,7 @@ InterCode translate_declist(StNode *declist)
 {
   if (IsProd(declist, 1, "Dec"))
   {
+    // assert(0);
     return translate_dec(declist->child, false);
   }
   else if (IsProd(declist, 3, "Dec", "COMMA", "DecList"))
@@ -505,6 +558,7 @@ InterCode translate_deflist(StNode *deflist)
     return NULL;
   if (IsProd(deflist, 2, "Def", "DefList"))
   {
+    // assert(0);
     InterCode code1 = translate_def(deflist->child);
     InterCode code2 = translate_deflist(deflist->child->siblings);
     return ConcatIr(code1, code2);
@@ -551,7 +605,11 @@ InterCode translate_varlist(StNode *cur)
   {
     InterCode ret = translate_paramdec(cur->child);
     Log("Gg");
-    // debug_IR(ret);
+    // if(ret){
+      // debug_IR(ret);
+    // Log("%d",ret->arg.varibale->type->mem_size);
+    // }
+    // assert(0);
     return ret;
   }
 }

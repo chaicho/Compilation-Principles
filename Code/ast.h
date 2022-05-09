@@ -1,7 +1,7 @@
 #ifndef __AST__
 #define __AST__
 #include "syntax.tab.h" 
-
+extern struct InterCode_ ;
 typedef struct StNode
 {
     const char *name;
@@ -13,6 +13,7 @@ typedef struct StNode
     int symbol; //bison中的
     YYSTYPE st_val;//此时可能会出现内存问题太
     int depth;
+    struct InterCode_ * compst_code; //中间代码生成
 }StNode;
 extern StNode * root;
 StNode * st_NodeInit(const char * nname);
