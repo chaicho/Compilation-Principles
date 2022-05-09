@@ -351,7 +351,8 @@ InterCode translate_stmt(StNode *stmt)
   {
     // assert(0);
     new_Scope();
-    parse_Compst(stmt->child,NULL,2);
+    parse_Compst(stmt->child,type_int,2);
+    // parse_DefList(stmt->child->child->siblings,2);
     // assert(0);
     InterCode ret= translate_compst(stmt->child);
     delete_Scope();
