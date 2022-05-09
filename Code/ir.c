@@ -322,6 +322,9 @@ InterCode translate_compst(StNode *cur)
 {
   if (cur == NULL || cur->is_empty)
     return NULL;
+  else if(cur->compst_code){
+    return cur->compst_code;
+  }
   else
   {
     InterCode code1 = translate_deflist(cur->child->siblings);
@@ -764,6 +767,7 @@ void Output_IR(FILE *f, InterCode op)
     break;
   default:
     fprintf(stderr, "\033[31mERROR in outputIR! Unknown op kind %d.\033[0m\n", op->kind);
+    assert(0);
     break;
   }
   fflush(f);

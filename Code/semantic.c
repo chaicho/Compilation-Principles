@@ -563,7 +563,7 @@ void parse_Compst(StNode *cur, Type rettype,int type){
     StNode *nxt = cur->child;
     parse_DefList(nxt->siblings,type);
     parse_StmtList(nxt->siblings->siblings,rettype,type);
-    // cur->compst_code = translate_compst(cur);
+    cur->compst_code = translate_compst(cur);
     // debug_IR(cur->compst_code);
 }
 FieldList parse_ParamDec(StNode *cur,int type){

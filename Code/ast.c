@@ -15,6 +15,7 @@ StNode * st_NodeInit(const char * nname){
         curnode->symbol = -1;
         curnode->depth =  0;
         curnode ->is_empty = 0;
+        curnode->compst_code = NULL;
         return curnode;
 }
 StNode * st_Insert(StNode * cur, StNode *nxt){
