@@ -2,3 +2,4 @@
 *.o
 Code/parser
 Code/scanner
+Test/
