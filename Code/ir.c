@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdarg.h>
-
+#include "opt.h"
 #define same(a, b) !strcmp(a, b)
 InterCode code_root = NULL;
 extern Type type_int;
@@ -20,6 +20,7 @@ Operand immediate[MAX_IMM] = {0};
 InterCode compst_codes[10000];
 int cur_compst = 0;
 FILE  * debug_file;
+
  void debug_IR(InterCode code){
   if(code == NULL ) return;
   Log("%d",code->kind);
@@ -192,6 +193,29 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     Operand t2 = new_temp();
     InterCode code1 = translate_exp(exp1, t1, false);
     InterCode code2 = translate_exp(exp2, t2, false);
+    if(t1->kind == OP_CONSTANT && t2->kind == OP_CONSTANT){
+       place->kind = OP_CONSTANT;
+       place->type = type_int;
+       switch (op_num)
+       {
+        case IR_ADD:
+         place->value =  t1->value + t2->value;
+         break;
+        case IR_MINUS:
+         place->value = t1->value -  t2->value;
+         break;
+        case IR_MUL:
+         place->value  = t1->value  * t2->value;
+          break;
+        case IR_DIV:
+         place->value = t1->value / t2->value;
+         break;
+        default:
+          assert(0);
+         break;
+       }
+       return   NULL;
+    }
     InterCode code3 = IR_binop(place, t1, t2, op_num);
     return ConcatCodes(3, code1, code2, code3);
   }
@@ -200,7 +224,16 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     StNode *exp1 = exp->child->siblings;
     Operand t1 = new_temp();
     InterCode code1 = translate_exp(exp1, t1, false);
-    InterCode code2 = IR_binop(place, new_constant(0), t1, IR_MINUS);
+    InterCode code2 = NULL;
+    if(t1->kind == OP_CONSTANT){
+      place->kind = OP_CONSTANT;
+      cp_op(place,t1);
+      place->value = -t1->value;
+      code2 = NULL; 
+    }
+    else{
+      code2 = IR_binop(place, new_constant(0), t1, IR_MINUS);
+    }
     return ConcatIr(code1, code2);
   }
   else if (IsProd(exp, 3, "ID", "LP", "RP"))
@@ -252,7 +285,14 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     // print_type(place->type,0);
     InterCode getaddr;
     Operand offset = new_temp();
-    InterCode cal_offset = IR_binop(offset, t2, new_constant(ele_size), IR_MUL);
+    InterCode cal_offset = NULL;
+    if(t2->kind == OP_CONSTANT){
+      cp_op(offset,t2);
+      offset->value = t2->value * ele_size;
+    }
+    else{
+     cal_offset = IR_binop(offset, t2, new_constant(ele_size), IR_MUL);
+    }
     place->type = t1->type->array.elem;
     place->is_add = lval;
     if (lval)

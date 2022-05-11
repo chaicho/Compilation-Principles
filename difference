@@ -1,0 +1,87 @@
+1c1
+< Error type 1 at Line 18: Undefined variable.
+---
+> Error type 1 at Line 18: Undefined variable "___".
+1c1
+< Error type 10 at Line 24: Use [] on non-array variable.
+---
+> Error type 10 at Line 24: is not an array.
+1c1
+< Error type 11 at Line 26: Use () on non-function variable .
+---
+> Error type 11 at Line 26: "new_array" is not a function.
+1c1
+< Error type 12 at Line 38: Non-int inside [].
+---
+> Error type 12 at Line 38: is not an integer.
+0a1
+> Error type 13 at Line 11: Illegal use of ".".
+1c1
+< Error type 14 at Line 30: Access to undefined fieldlist in sturct .
+---
+> Error type 14 at Line 30: Non-existent field "curr".
+1c1
+< Error type 15 at Line 8: Redefinition or initialization of fieldlsit .
+---
+> Error type 15 at Line 8: Redefined field "=".
+1c1
+< Error type 16 at Line 13: Duplicated struct name with prior struct or variable  .
+---
+> Error type 16 at Line 13: Duplicated name "Hammer".
+1c1
+< Error type 17 at Line 11: Use of undefined sturct name.
+---
+> Error type 17 at Line 11: Undefined structure "Thor".
+1c1
+< Error type 9 at Line 33: Mismatched arguments function .
+---
+> Error type 9 at Line 33: Function "ivec3_is_equal" is not applicable for arguments.
+1c1
+< Error type 15 at Line 11: Redefinition or initialization of fieldlsit .
+---
+> Error type 15 at Line 11: Redefined field "counter".
+1c1
+< Error type 2 at Line 9: Undefined function.
+---
+> Error type 2 at Line 9: Undefined function "swap".
+1c1
+< Error type 3 at Line 20: Redefined variable.
+---
+> Error type 3 at Line 20: Redefined variable "Hammer".
+1,2c1
+< Error type 3 at Line 5: Redefined variable.
+< Error type 3 at Line 6: Redefined variable.
+---
+> Error type 3 at Line 5: Redefined variable "Vector".
+1c1
+< Error type 4 at Line 17: Redefined function.
+---
+> Error type 4 at Line 17: Redefined function "vec_is_equal".
+0a1
+> Error type 6 at Line 22: The left-hand side of an assignment must be a variable.
+1c1
+< Error type 9 at Line 39: Mismatched arguments function .
+---
+> Error type 9 at Line 39: Function "ivec_is_equal" is not applicable for arguments.
+0a1,4
+> Error type 14 at Line 15: Non-existent field "rw".
+> Error type 11 at Line 25: "fcirc" is not a function.
+> Error type 4 at Line 32: Redefined function "calArea".
+> Error type 9 at Line 53: Function "makeCirc" is not applicable for arguments.
+1c1
+< Error type 7 at Line 17: Type mismatched for operands.
+---
+> Error type 1 at Line 17: Undefined variable "ZERO".
+3,8c3,7
+< Error type 2 at Line 23: Undefined function.
+< Error type 12 at Line 30: Non-int inside [].
+< Error type 9 at Line 76: Mismatched arguments function .
+< Error type 1 at Line 79: Undefined variable.
+< Error type 1 at Line 83: Undefined variable.
+< Error type 1 at Line 84: Undefined variable.
+---
+> Error type 2 at Line 23: Undefined function "max".
+> Error type 12 at Line 30: is not an integer.
+> Error type 6 at Line 50: The left-hand side of an assignment must be a variable.
+> Error type 9 at Line 83: Function "flaGet" is not applicable for arguments.
+> Error type 10 at Line 84: is not an array.

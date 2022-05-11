@@ -1,13 +1,7 @@
-int func()
-{
-  int i = 10;
-  return i;
-}
 
 int main()
 {
-  int i;
-  int i, j
-  ;
-  i = func();
-}
+int n[10]; 
+int i ,j,k,l,z,x,c,v,b,m;
+i =  j = k = l = z = c = v = 0;  
+} 

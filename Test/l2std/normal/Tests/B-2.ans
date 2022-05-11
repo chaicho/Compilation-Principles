@@ -1,0 +1,7 @@
+Error type 1 at Line 17: Undefined variable "ZERO".
+Error type 8 at Line 19: Type mismatched for return.
+Error type 2 at Line 23: Undefined function "max".
+Error type 12 at Line 30: is not an integer.
+Error type 6 at Line 50: The left-hand side of an assignment must be a variable.
+Error type 9 at Line 83: Function "flaGet" is not applicable for arguments.
+Error type 10 at Line 84: is not an array.

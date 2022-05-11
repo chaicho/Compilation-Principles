@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "semantic.h"
 #include "ir.h"
+#include "opt.h"
 #define L3
 extern FILE * yyin;
 // #define FLEXDEBUG
@@ -55,6 +56,7 @@ int main(int argc, char** argv)
         // Log("%s",argv[2]);
         FILE * outdir =  fopen (argv[2], "w+");
         assert(outdir);
+        OptIr(code_root);
         InterCode tmp = code_root;
         while (tmp)
         {

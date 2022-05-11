@@ -1,0 +1,5 @@
+Error type 19 at Line 4: Inconsistent declaration of function "substract".
+Error type 9 at Line 14: Function "substract" is not applicable for arguments.
+Error type 9 at Line 19: Function "substract" is not applicable for arguments.
+Error type 18 at Line 1: Undefined function "equal".
+Error type 18 at Line 3: Undefined function "substract".

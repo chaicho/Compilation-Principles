@@ -707,8 +707,10 @@ void IR_Init(){
 
     HT_Insert(SymbolTable,write_symbol->name,write_symbol);     
 }
+HashTable_p IrTable; 
 void parse_tree(StNode * cur){
-  HT_Init();
+  SymbolTable =  HT_Init(); 
+  IrTable = HT_Init();
   IR_Init();
   parse_ExtDefList(cur->child);
   for(int i= 0  ;i < func_cnt;i++){

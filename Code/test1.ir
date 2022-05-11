@@ -1,61 +1,11 @@
 
-FUNCTION  average :
-PARAM v1
-v2 := #0
-v3 := #0
-t5 := v1 + #800
-t3 := *t5
-v4 := t3
-LABEL label1 :
-IF v3 < v4 GOTO label2
-GOTO label3
-LABEL label2 :
-t14 := v1 + #0
-t17 := v3 * #8
-t13 := t14 + t17
-t18 := t13 + #0
-t11 := *t18
-t10 := t11 + v2
-v2 := t10
-t8 := v2
-t30 := v3 + #1
-v3 := t30
-t28 := v3
-GOTO label1
-LABEL label3 :
-t36 := v2 / v4
-RETURN t36
-
 FUNCTION  main :
-DEC v5 804
-v6 := #0
-v7 := #10
-v8 := #0
-t43 := &v5 + #800
-*t43 := v7
-t42 := *t43
-LABEL label4 :
-IF v8 < v7 GOTO label5
-GOTO label6
-LABEL label5 :
-t52 := &v5 + #0
-t55 := v8 * #8
-t51 := t52 + t55
-t50 := t51 + #0
-t57 := v8 + #1
-t58 := v8 + #1
-t56 := t57 * t58
-*t50 := t56
-t49 := *t50
-t72 := v8 + #1
-v8 := t72
-t70 := v8
-GOTO label4
-LABEL label6 :
-ARG &v5
-t80 := CALL average
-v6 := t80
-t78 := v6
-WRITE v6
-t84 := #0
-RETURN #0
+DEC v1 40
+v9 := #0
+v8 := v9
+v6 := v8
+v5 := v6
+v4 := v5
+v3 := v4
+v2 := v3
+t1 := v2

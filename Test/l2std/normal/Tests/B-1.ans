@@ -1,0 +1,4 @@
+Error type 14 at Line 15: Non-existent field "rw".
+Error type 11 at Line 25: "fcirc" is not a function.
+Error type 4 at Line 32: Redefined function "calArea".
+Error type 9 at Line 53: Function "makeCirc" is not applicable for arguments.

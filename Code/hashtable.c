@@ -26,21 +26,21 @@ void set_stacktop(Symbol a ){
 }
 
 HashTable *  HT_Init(){  
-		SymbolTable = malloc(sizeof(HashTable));
-    assert(SymbolTable);
-	  if((SymbolTable->table = malloc(TABLE_SIZE *sizeof(HashElem *))) == NULL)
+		HashTable_p ret = malloc(sizeof(HashTable));
+    assert(ret);
+	  if((ret->table = malloc(TABLE_SIZE *sizeof(HashElem *))) == NULL)
 	  {
       assert(0);
 	  }
-	  SymbolTable->ele_max = TABLE_SIZE;
-		// Log("%d",SymbolTable->ele_max)	;
-	  SymbolTable->ele_count = 0;
+	  ret->ele_max = TABLE_SIZE;
+		// Log("%d",ret->ele_max)	;
+	  ret->ele_count = 0;
 	  for(int i = 0; i < TABLE_SIZE; i++)
-	  	SymbolTable->table[i] = NULL;
+	  	ret->table[i] = NULL;
 		for(int i = 0 ;i < STACK_SIZE ; i++){
 			scope_stack[i] = NULL; 
 		}
-	  return SymbolTable;
+	  return ret;
 }
 
 void* HT_Insert(HashTable * hasht, char* key, Symbol data)
