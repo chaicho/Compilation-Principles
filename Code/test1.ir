@@ -1,11 +1,29 @@
 
 FUNCTION  main :
-DEC v1 40
-v9 := #0
-v8 := v9
-v6 := v8
-v5 := v6
-v4 := v5
-v3 := v4
-v2 := v3
-t1 := v2
+v4 := #0
+v1 := #5
+t2 := v1
+t9 := v1 * v1
+t10 := v1 + #2
+t8 := t9 * t10
+v2 := t8
+t6 := v2
+WRITE v2
+t22 := #0
+t27 := v2 / v1
+t26 := t27 + #1
+v3 := t26
+t24 := v3
+WRITE v3
+t36 := #0
+t43 := v1 + v2
+t44 := v3 * #3
+t41 := t43 - t44
+t49 := v2 / v1
+t42 := t49 - #4
+t40 := t41 + t42
+v4 := t40
+t38 := v4
+WRITE v4
+t66 := #0
+RETURN #0
