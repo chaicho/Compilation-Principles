@@ -653,7 +653,8 @@ void parse_ExtDef(StNode * cur){
         delete_Scope();
         if(right_defined) functype->function.defined = true;
         right_defined = true;
-    }
+        Log("Finish Function");
+    } 
     else if(IsProd(cur,2 ,"Specifier","SEMI")){
         Type structtype = parse_Specifier(nxt);
         // print_type(structtype,0);

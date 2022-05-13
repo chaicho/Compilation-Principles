@@ -124,7 +124,10 @@ InterCode translate_stmtlist(StNode *cur);
 InterCode translate_stmtlist(StNode *cur);
 InterCode translate_extdef(StNode * cur);
 static inline void ListAppend( InterCodeList l,InterCode c){
-  if(l->head == NULL)  l->head = c;
+  if(l->head == NULL)  {
+    Log("Insert to arglist");
+    l->head = c;
+  }
   else{
     l-> head = ConcatIr(l->head,c);
     l->tail = c;

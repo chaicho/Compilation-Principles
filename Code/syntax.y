@@ -106,8 +106,9 @@ while (0)
 %left  RELOP
 %left  PLUS MINUS
 %left  STAR DIV
-%right NOT
+%right NOT UMINUS
 %left  DOT LB RB LP RP
+
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -228,7 +229,7 @@ Exp : Exp "=" Exp
    | Exp "*" Exp
    | Exp "/" Exp
    | "(" Exp ")"
-   | "-" Exp
+   | "-" Exp %prec UMINUS
    | "!" Exp
    | ID "(" Args ")"
    | ID "(" ")"

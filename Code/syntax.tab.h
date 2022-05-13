@@ -91,7 +91,8 @@ extern int yydebug;
     ELSE = 282,
     WHILE = 283,
     RETURN = 284,
-    LOWER_THAN_ELSE = 285
+    UMINUS = 285,
+    LOWER_THAN_ELSE = 286
   };
 #endif
 
@@ -106,7 +107,7 @@ union YYSTYPE
    int relop_val ;
    char *str_val; 
 
-#line 110 "./syntax.tab.h"
+#line 111 "./syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

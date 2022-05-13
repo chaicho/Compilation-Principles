@@ -53,10 +53,11 @@ int main(int argc, char** argv)
         #ifdef L3
 
         Log("Finish Parser");
-        // Log("%s",argv[2]);
+        Log("%s",argv[2]);
         FILE * outdir =  fopen (argv[2], "w+");
         assert(outdir);
         // OptIr(code_root);
+        // Log("%s",outdir);
         InterCode tmp = code_root;
         while (tmp)
         {

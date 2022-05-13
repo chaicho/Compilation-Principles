@@ -96,6 +96,7 @@ Symbol Symbol_Init(Type curtype, int symbol_kind){
    Symbol ret =malloc(sizeof(struct Symbol_));
    ret->kind = symbol_kind;
    ret->type = curtype;
+   ret->alias = NULL;
    // 将当前symbol连上
    return ret;
 }

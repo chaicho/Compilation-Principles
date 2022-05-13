@@ -192,6 +192,7 @@ InterCode IR_function(Operand func){
   return ret;
 }
 InterCode IR_param(Operand Param){
+  
   InterCode ret= new_intercode();
   ret->kind = IR_PARAM;
   ret->parametre.param = Param;
