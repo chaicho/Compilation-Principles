@@ -259,7 +259,7 @@ InterCode translate_exp(StNode *exp, Operand place, bool lval)
     {
       Operand t1 = new_temp();
       InterCode code1 = translate_exp(exp->child->siblings->siblings->child,t1,false);
-      InterCode ret=  ConcatCodes(3, code1, IR_write(t1), IR_assign(place, new_constant(0)));
+      InterCode ret=  ConcatCodes(2, code1, IR_write(t1));
       return ret;
     }
     Operand function = new_function(id);
@@ -724,7 +724,7 @@ InterCode translate_extdef(StNode *cur)
     assert(0);
   }
 }
-static inline char *OpName(Operand op)
+char *OpName(Operand op)
 {
   if(op == NULL) Assert(0,"NULL op");
   char *name = (char *)malloc(16 * sizeof(char));
@@ -738,7 +738,8 @@ static inline char *OpName(Operand op)
     sprintf(name, "label%d", op->var_no);
   }
   else if(op->kind == OP_FUNCTION){
-      strcpy(name,op->name);
+      strcpy(name, op->name);
+      
   }
   else
   {

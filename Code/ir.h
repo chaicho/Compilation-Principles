@@ -45,13 +45,16 @@ struct Operand_ {
  bool is_add;
  struct Type_ * type;
  Operand addr_op;
+ bool need_deref;
  union {
     int var_no;
     int value;
     char * name; 
     unsigned int address;
-    
  };
+ int size;
+ int offset;
+ int reg_num;
 };
 struct InterCode_
 {
@@ -60,7 +63,7 @@ struct InterCode_
       struct { Operand l;} label;
       struct { Operand right, left; } assign;
       struct { Operand result, op1, op2; } binop;
-      struct { Operand op_ret;} ret;
+      struct { Operand op_ret; Operand func;} ret;
       struct { Operand l_jmp;} jmp;
       struct { Operand t1, relop, t2, target;} jump_cond;
       struct { Operand varibale;} arg; 
@@ -148,7 +151,7 @@ static inline InterCode ListReverse(InterCodeList list){
 }
 void debug_IR(InterCode code);
 // void debug_ir(InterCode a);
-static inline char *OpName(Operand op);
+ char *OpName(Operand op);
 void Output_IR(FILE * f,InterCode a);
 void debugtillend_IR(InterCode code);
 #endif

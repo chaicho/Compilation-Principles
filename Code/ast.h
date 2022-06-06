@@ -1,7 +1,7 @@
 #ifndef __AST__
 #define __AST__
 #include "syntax.tab.h" 
-extern struct InterCode_ ;
+// extern struct InterCode_ ;
 typedef struct StNode
 {
     const char *name;

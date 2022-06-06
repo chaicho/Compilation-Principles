@@ -4,6 +4,7 @@
 #include "semantic.h"
 #include "ir.h"
 #include "opt.h"
+#include "asm.h"
 #define L3
 extern FILE * yyin;
 // #define FLEXDEBUG
@@ -54,17 +55,20 @@ int main(int argc, char** argv)
 
         Log("Finish Parser");
         Log("%s",argv[2]);
+        FILE *irdir = fopen("test1.ir","w+");
         FILE * outdir =  fopen (argv[2], "w+");
         assert(outdir);
-        // OptIr(code_root);
+        OptIr(code_root);
         // Log("%s",outdir);
         InterCode tmp = code_root;
         while (tmp)
         {
-            Output_IR(outdir,tmp);
-            // assert(0);
-            tmp = tmp->next;
+          Output_IR(irdir,tmp);
+          tmp = tmp->next;
         }
+        
+        Generate_code(outdir , code_root);
+        
         #endif
         
     }

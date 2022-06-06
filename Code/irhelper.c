@@ -15,6 +15,7 @@ extern HashTable * SymbolTable;
 static inline Operand new_operand(){
     Operand ret = (Operand) malloc(sizeof(struct Operand_));
     ret->is_add = false;
+    ret->need_deref = false;
     return ret;
 }
 static inline InterCode new_intercode(){

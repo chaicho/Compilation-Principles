@@ -49,6 +49,7 @@ struct Symbol_
    struct Type_ const * type;
    struct Operand_ * alias;
    int depth;
+   int offset; //距离顶层的offset
 };
 Type Basic_Init(StNode * );
 Type Struct_Init();
