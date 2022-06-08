@@ -83,7 +83,7 @@ int get_free_reg(FILE *f, Operand a)
   //   regtoop[reg_cnt] = NULL;
   // }
   //此时当前寄存器可以被使用
-  Loadmemtoreg(f, reg_cnt, a);
+  // Loadmemtoreg(f, reg_cnt, a);
   a->reg_num = reg_cnt;  //当前reg被当前op占有
   regtoop[reg_cnt] = a;
   // printf("%s\n",id);
@@ -91,8 +91,14 @@ int get_free_reg(FILE *f, Operand a)
 }
 char * get_reg_name(FILE * f, Operand a){
   int reg_id = get_free_reg(f, a);
+  Loadmemtoreg(f, reg_cnt, a);
   Log("%s : %s", OpName(a) , regs[reg_id]);
   return regs[reg_id];
+}
+char * get_regwithval(FILE * f, Operand a){
+  int reg_cnt = get_free_reg(f,a);
+  // Loadmemtoreg(f, reg_cnt, a);
+  return regs[reg_cnt];
 }
 static inline bool is_constant(Operand a)
 {
@@ -137,8 +143,8 @@ int Prepare_func(FILE *f, InterCode func_code)
 {
   InterCode cur_code = func_code;
   Log("Prepare function %s\n", func_code->function.func->name);
-  int curoffset = -4;
-  int paramoffset = 8;
+  int curoffset = -12;
+  int paramoffset = 0;
   // curoffset -= 4; //$fp
   cur_code = cur_code->next;
   while (cur_code != NULL && cur_code->kind != IR_FUNCTION)
@@ -219,10 +225,8 @@ void pushtostack(FILE *f, Operand op){
     if(!(op->type->kind == BASIC || op->is_add)){
         op->need_deref = true; 
     }
-    num = get_free_reg(f , op);
-    fprintf(f, "  addi  $sp, $sp, -4\n");
-    fprintf(f, "  sw  %s, 0($sp)\n",regs[num] );
- 
+   fprintf(f, "  addi  $sp, $sp, -4\n");
+    fprintf(f, "  sw  %s, %d($sp)\n",get_reg_name(f,op), 0);
 }
 
       char * pos[] = { "-" ,""};
@@ -276,8 +280,10 @@ void  Generate_code(FILE *f, InterCode root_code)
     {
       int func_size = Prepare_func(f, curcode);
       fprintf(f, "%s:\n", curcode->function.func->name);
-      fprintf(f, "  move  $fp, $sp\n");
       fprintf(f, "  subu  $sp, $sp, %d\n", func_size);
+      fprintf(f, "  sw  $ra  %d($sp) \n",func_size - 4);
+      fprintf(f, "  sw  $fp  %d($sp) \n",func_size - 8);
+      fprintf(f, "  addi  $fp, $sp , %d\n",func_size);
       fflush(f);
     }
     break;
@@ -300,18 +306,18 @@ void  Generate_code(FILE *f, InterCode root_code)
     case IR_READ:
       dst_reg_cnt =  get_free_reg(f, curcode->read.result);
       dst_reg = regs[dst_reg_cnt];
-      pushra(f);
+      // pushra(f);
       fprintf(f, "  jal  read\n");
-      popra(f);
+      // popra(f);
       fprintf(f, "  move %s, $v0\n",dst_reg);
       Saveregtomem(f, dst_reg_cnt ,curcode->read.result );
       // fprintf(f, "READ %s\n", get_reg_name(f,curcode->read.result));
       break;
     case IR_WRITE:
-      pushra(f);
+      // pushra(f);
       fprintf(f, "  move $a0, %s\n",get_reg_name(f, curcode->arg.varibale));
       fprintf(f, "  jal  write\n");
-      popra(f);
+      // popra(f);
       // fprintf(f, "WRITE %s\n", get_reg_name(f,curcode->write.result));
       break;
     case IR_CALADDR:{
@@ -384,9 +390,10 @@ void  Generate_code(FILE *f, InterCode root_code)
     case IR_CALL:
       if (curcode->call.result)
       {
-        pushra(f);
+        // fprintf(f, "  subu  $sp, $sp, %d\n",arg_num * 4 );
+        // pushra(f);
         fprintf(f, "  jal  %s\n", OpName(curcode->call.func));
-        popra(f);
+        // popra(f);
         dst_reg_cnt  = get_free_reg(f,curcode->call.result);
         fprintf(f, "  move  %s, $v0\n",regs[dst_reg_cnt]);
         Saveregtomem(f, dst_reg_cnt, curcode->call.result);
@@ -404,7 +411,10 @@ void  Generate_code(FILE *f, InterCode root_code)
       // clear_regs(f);
       int size = curcode->ret.func->size;
       fprintf(f, "  move  $v0, %s\n", get_reg_name(f, curcode->ret.op_ret));
-      fprintf(f, "  addiu  $sp, $sp, %d\n", size);
+      fprintf(f, "  lw  $ra  %d($sp) \n",size - 4);
+      fprintf(f, "  lw  $fp  %d($sp) \n",size - 8);
+      fprintf(f, "  addi $sp, $sp, %d\n",size);
+      // fprintf(f, "  addiu  $sp, $sp, %d\n", size);
       fprintf(f, "  jr  $ra\n");
       break;
     }
